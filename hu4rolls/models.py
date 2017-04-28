@@ -147,7 +147,10 @@ class PokerTable(db.Model):
 
     def start_new_hand(self):
         self.stage = GameStage.preflop
-        self.button = random.choice(range(2))
+        if self.button is None:
+            self.button = random.choice(range(2))
+        else:
+            self.button = 1 - self.button
         self.active_seat = self.button
         self.pot_size = 0
         self.bet_size = 0
