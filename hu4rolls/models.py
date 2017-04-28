@@ -120,7 +120,9 @@ class PokerTable(db.Model):
                 if self.seats[seat_num].stack_size == 0:
                     self.active_seat = None
                     eventlet.spawn(self.do_showdown)
-                    emit('test', 'asf', broadcast=True)
+                elif (self.stage == GameStage.preflop
+                      and self.total_bet_size == self.bb_size):
+                    self.advance_active_seat()
                 else:
                     self.advance_stage()
             elif action['name'] == 'fold':
