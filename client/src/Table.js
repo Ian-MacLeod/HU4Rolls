@@ -14,6 +14,7 @@ class Table extends Component {
       seatList: [{
         stackSize: null,
         netWon: 0,
+        amountInvested: null,
         isEmpty: true
       },
       {
@@ -70,15 +71,11 @@ class Table extends Component {
                         && this.state.totalBetSize === this.state.BBSize)
     return(
       <div className="pokertable">
-        <div>
-          Pot Size:
-          {this.state.potSize - this.state.betSize}
-        </div>
-        <div>
-          Bet Size:
-          {this.state.betSize}
-        </div>
         <div className="felt">
+          <div className="pot-size">
+            Pot
+            {' ' + (this.state.potSize - this.state.betSize)}
+          </div>
           <Seat seatInfo={this.state.seatList[0]}
                 seatNum={0}
                 cards={this.state.cardsBySeat[0]}
@@ -138,6 +135,9 @@ class Seat extends Component {
       <div className={"seat " + "seat-" + this.props.seatNum + (this.props.isActive ? " active" : "")}>
         <Card card={this.props.cards[0]} />
         <Card card={this.props.cards[1]} />
+        <div className="invested">
+          {this.props.seatInfo.amountInvested || ''}
+        </div>
         {contents}
         <Timer />
       </div>

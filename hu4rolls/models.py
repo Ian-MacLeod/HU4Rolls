@@ -41,10 +41,12 @@ class Seat(db.Model):
     stack_size = db.Column(db.Integer)
     hand = db.Column(db.String)
     net_won = db.Column(db.Integer)
+    amount_invested = db.Column(db.Integer)
 
     def __init__(self, number):
         self.number = number
         self.net_won = 0
+        self.amount_invested = 0
 
 
 class PokerTable(db.Model):
@@ -136,6 +138,8 @@ class PokerTable(db.Model):
         self.active_seat = 1 - self.button
         self.bet_size = 0
         self.total_bet_size = 0
+        for seat in self.seats:
+            seat.amount_invested = 0
         if self.stage == GameStage.river:
             self.do_showdown()
         else:
@@ -150,6 +154,7 @@ class PokerTable(db.Model):
         self.total_bet_size = 0
         for seat in self.seats:
             seat.stack_size = self.max_buyin_bbs * self.bb_size
+            seat.amount_invested = 0
         self.put_in(self.button, self.bb_size // 2)
         self.put_in(1 - self.button, self.bb_size)
         self.deal_hands()
@@ -163,6 +168,7 @@ class PokerTable(db.Model):
         if seat.player_id is None and player_sid not in [s.player_id for s in self.seats]:
             seat.player_id = player_sid
             seat.net_won = 0
+            seat.stack_size = self.max_buyin_bbs * self.bb_size
             if self.is_full():
                 self.start_new_hand()
             db.session.commit()
@@ -173,6 +179,7 @@ class PokerTable(db.Model):
 
     def put_in(self, seat_num, amount):
         self.seats[seat_num].stack_size -= amount
+        self.seats[seat_num].amount_invested += amount
         self.pot_size += amount
         new_bet_size = amount - self.bet_size
         self.total_bet_size += new_bet_size
@@ -224,6 +231,9 @@ class PokerTable(db.Model):
         for seat in self.seats:
             if seat.player_id == player_sid:
                 seat.player_id = None
+                seat.net_won = None
+                seat.stack_size = None
+                seat.amount_invested = None
                 new_state = self.get_state()
         db.session.commit()
         return new_state
@@ -232,6 +242,7 @@ class PokerTable(db.Model):
         return {
             'seatList': [{'stackSize': seat.stack_size,
                           'netWon': seat.net_won,
+                          'amountInvested': seat.amount_invested,
                           'isEmpty': not seat.player_id} for seat in self.seats],
             'activeSeatNum': self.active_seat,
             'button': self.button,

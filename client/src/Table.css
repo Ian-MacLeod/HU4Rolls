@@ -30,10 +30,20 @@
   background:#ccc;
 }
 .seat-0 {
-  top:-7%;
+  top:-9%;
 }
 .seat-1 {
-  bottom:-7%
+  bottom:-9%
+}
+.seat-1 .invested {
+  position:absolute;
+  top:-130%;
+  color:white;
+}
+.seat-0 .invested {
+  position:absolute;
+  bottom:-50%;
+  color:white;
 }
 .top {
   position:absolute;
@@ -86,10 +96,19 @@
 .card.suit-n{
   background-color:#555;
 }
+.pot-size{
+  color:white;
+  position:absolute;
+  top:50%;
+  left:0;
+  right:0;
+  margin-left:auto;
+  margin-right:auto;
+}
 ul.board {
   position:absolute;
   height:14%;
-  top:43%;
+  top:35%;
   width:24%;
   left:38%;
   padding:0;
