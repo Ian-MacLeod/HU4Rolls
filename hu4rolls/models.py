@@ -231,9 +231,9 @@ class PokerTable(db.Model):
         for seat in self.seats:
             if seat.player_id == player_sid:
                 seat.player_id = None
-                seat.net_won = None
+                seat.net_won = 0
                 seat.stack_size = None
-                seat.amount_invested = None
+                seat.amount_invested = 0
                 new_state = self.get_state()
         db.session.commit()
         return new_state

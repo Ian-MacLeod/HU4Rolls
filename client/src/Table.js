@@ -14,12 +14,13 @@ class Table extends Component {
       seatList: [{
         stackSize: null,
         netWon: 0,
-        amountInvested: null,
+        amountInvested: 0,
         isEmpty: true
       },
       {
         stackSize: null,
         netWon: 0,
+        amountInvested: 0,
         isEmpty: true
       }],
       activeSeatNum: null,
@@ -68,13 +69,16 @@ class Table extends Component {
 
   render() {
     let isFacingLimp = (this.state.communityCards.length === 0
-                        && this.state.totalBetSize === this.state.BBSize)
+                        && this.state.totalBetSize === this.state.BBSize);
+    let totalInvested = this.state.seatList.reduce(
+      (a, b) => a + b.amountInvested, 0);
+    let potSize = this.state.potSize - totalInvested;
+    let investedString = potSize ? 'Pot ' + potSize : '';
     return(
       <div className="pokertable">
         <div className="felt">
           <div className="pot-size">
-            Pot
-            {' ' + (this.state.potSize - this.state.betSize)}
+            {investedString}
           </div>
           <Seat seatInfo={this.state.seatList[0]}
                 seatNum={0}

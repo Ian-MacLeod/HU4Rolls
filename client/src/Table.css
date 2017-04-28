@@ -69,10 +69,10 @@
   font-size:3vw;
 }
 .card:nth-child(1) {
-  left:20%;
+  left:23%;
 }
 .card:nth-child(2) {
-  right:20%;
+  right:23%;
 }
 .card div {
   position:absolute;
