@@ -42,6 +42,9 @@ class Table extends Component {
     socket.on('seated at', (seatNum) => {
       this.setState({heroNum: seatNum});
     });
+    socket.on('show cards', (cards) => {
+      this.setState({'cardsBySeat': cards})
+    })
     console.log('ready to receive');
     socket.emit('ready to receive');
   }
