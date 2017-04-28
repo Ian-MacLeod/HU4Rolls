@@ -62,6 +62,8 @@ class Table extends Component {
   }
 
   render() {
+    let isFacingLimp = (this.state.communityCards.length === 0
+                        && this.state.totalBetSize === this.state.BBSize)
     return(
       <div className="table">
         <div>
@@ -86,7 +88,8 @@ class Table extends Component {
           <ActionWindow heroStackSize={this.state.seatList[this.state.heroNum].stackSize}
                         betSize={this.state.betSize}
                         totalBetSize={this.state.totalBetSize}
-                        BBSize={this.state.BBSize} />
+                        BBSize={this.state.BBSize}
+                        isFacingLimp={isFacingLimp}/>
         }
         <button onClick={this.clearTable}>Clear Table</button>
         <button onClick={this.leaveTable}>Leave Table</button>
@@ -256,30 +259,31 @@ class ActionWindow extends Component {
   }
 
   render() {
-    let action_buttons = null;
-    let aggressive_action = null
     if (this.props.betSize){
-      aggressive_action = "raise"
-      action_buttons = [<ActionButton handleClick={this.submitAction("call")}
-                                      text={"Call " + this.props.betSize} />];
-      if (this.props.heroStackSize > this.props.betSize) {
-        action_buttons.push(<ActionButton handleClick={this.submitAction("raise")}
-                                          text={"Raise " + this.getConstrainedBetSize()} />);
-      }
+      var aggressive_action = "raise";
+      var aggressive_text = "Raise " + this.getConstrainedBetSize();
+      var passive_action = "call";
+      var passive_text = "Call " + this.props.betSize;
     } else {
-      aggressive_action = "bet"
-      action_buttons = [
-        <ActionButton handleClick={this.submitAction("check")}
-                      text="Check"/>,
-        <ActionButton handleClick={this.submitAction("bet")}
-                      text={"Bet " + this.getConstrainedBetSize()} />
-      ];
+      var aggressive_action = "bet";
+      if (this.props.isFacingLimp){
+        var aggressive_text = "Raise " + this.getConstrainedBetSize();
+      } else {
+        var aggressive_text = "Bet " + this.getConstrainedBetSize();
+      }
+      var passive_action = "check";
+      var passive_text = "Check";
+    }
+    let aggressive_button = '';
+    if (this.props.heroStackSize > this.props.betSize){
+      aggressive_button = <ActionButton handleClick={this.submitAction(aggressive_action)}
+                                        text={aggressive_text} />
     }
     return (
       <div>
-        <ActionButton handleClick={this.submitAction("fold")}
-                      text="Fold" />
-        {action_buttons}
+        <ActionButton handleClick={this.submitAction("fold")} text="Fold" />
+        <ActionButton handleClick={this.submitAction(passive_action)} text={passive_text} />
+        {aggressive_button}
         <input type="text" value={this.state.inputBetSize}
                onChange={this.handleInputChange}
                onKeyDown={this.handleKeyDown(aggressive_action)}/>
