@@ -105,7 +105,7 @@ class PokerTable(db.Model):
             return
         if self._is_valid_action(seat_num, action):
             if action['name'] == 'check':
-                if seat_num == self.button:
+                if seat_num == self.button or self.stage is GameStage.preflop:
                     self.advance_stage()
                 else:
                     self.advance_active_seat()
