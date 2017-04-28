@@ -209,6 +209,11 @@ class ChatWindow extends Component {
     });
   }
 
+  componentDidUpdate() {
+    let chatWindow = document.getElementById('chat-window');
+    chatWindow.scrollTop = chatWindow.scrollHeight;
+  }
+
   sendMessage(event) {
     socket.emit('chat message', this.state.messageInput);
     this.setState({messageInput: ''});
@@ -221,12 +226,13 @@ class ChatWindow extends Component {
 
   render() {
     return(
-      <div>
-        <ul className="messages">
+      <div className="chat">
+        <div id="chat-window">
           {this.state.messages.map((msg, idx) =>
-            <li key={idx}>{msg}</li>
+            <div key={idx}>{msg}</div>
           )}
-        </ul>
+          <div ref={(el) => { this.lastChat = el }}></div>
+        </div>
         <form onSubmit={this.sendMessage}>
           <input type="text" value={this.state.messageInput} onChange={this.handleChange} />
           <input type="submit" value="Send Message" />
@@ -298,7 +304,7 @@ class ActionWindow extends Component {
                                         text={aggressive_text} />
     }
     return (
-      <div>
+      <div className="action-window">
         <ActionButton handleClick={this.submitAction("fold")} text="Fold" />
         <ActionButton handleClick={this.submitAction(passive_action)} text={passive_text} />
         {aggressive_button}
