@@ -220,21 +220,30 @@ class ActionWindow extends Component {
     super();
     this.state = {inputBetSize: 0};
     this.handleInputChange = this.handleInputChange.bind(this);
-    this.handleClick = this.handleClick.bind(this);
+    this.submitAction = this.submitAction.bind(this);
+    this.handleKeyDown = this.handleKeyDown.bind(this);
   }
 
-  handleClick(action) {
+  submitAction(action) {
     return (function() {
       console.log(this.getConstrainedBetSize(), this.props.totalBetSize, this.props.betSize);
       socket.emit('do action',
                   {'name': action,
                    'size': this.getConstrainedBetSize() - this.props.totalBetSize + this.props.betSize});
+      this.setState({inputBetSize: 0});
     }).bind(this);
-    this.setState({inputBetSize: 0})
   }
 
   handleInputChange(event) {
     this.setState({inputBetSize: event.target.value});
+  }
+
+  handleKeyDown(action) {
+    return (function(event) {
+      if (event.key === 'Enter'){
+        this.submitAction(action)();
+      }
+    }).bind(this);
   }
 
   getConstrainedBetSize(){
@@ -248,32 +257,32 @@ class ActionWindow extends Component {
 
   render() {
     let action_buttons = null;
+    let aggressive_action = null
     if (this.props.betSize){
-      action_buttons = [<ActionButton handleClick={this.handleClick}
-                                      actionName="call"
+      aggressive_action = "raise"
+      action_buttons = [<ActionButton handleClick={this.submitAction("call")}
                                       text={"Call " + this.props.betSize} />];
       if (this.props.heroStackSize > this.props.betSize) {
-        action_buttons.push(<ActionButton handleClick={this.handleClick}
-                                          actionName="raise"
+        action_buttons.push(<ActionButton handleClick={this.submitAction("raise")}
                                           text={"Raise " + this.getConstrainedBetSize()} />);
       }
     } else {
+      aggressive_action = "bet"
       action_buttons = [
-        <ActionButton handleClick={this.handleClick}
-                      actionName="check"
+        <ActionButton handleClick={this.submitAction("check")}
                       text="Check"/>,
-        <ActionButton handleClick={this.handleClick}
-                      actionName="bet"
+        <ActionButton handleClick={this.submitAction("bet")}
                       text={"Bet " + this.getConstrainedBetSize()} />
       ];
     }
     return (
       <div>
-        <ActionButton handleClick={this.handleClick}
-                      actionName="fold"
+        <ActionButton handleClick={this.submitAction("fold")}
                       text="Fold" />
         {action_buttons}
-        <input type="text" value={this.state.inputBetSize} onChange={this.handleInputChange} />
+        <input type="text" value={this.state.inputBetSize}
+               onChange={this.handleInputChange}
+               onKeyDown={this.handleKeyDown(aggressive_action)}/>
       </div>
     );
   }
@@ -282,7 +291,7 @@ class ActionWindow extends Component {
 class ActionButton extends Component {
   render() {
     return (
-      <button onClick={this.props.handleClick(this.props.actionName)}>
+      <button onClick={this.props.handleClick}>
         {this.props.text}
       </button>
     )
