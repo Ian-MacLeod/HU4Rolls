@@ -1,0 +1,114 @@
+.pokertable {
+  margin-top:50px;
+  position: relative;
+  width: 100%;
+  height: 0;
+  padding-top: 50%;
+  box-sizing: border-box;
+}
+.felt {
+  position: absolute;
+  top: 15%;
+  left: 10%;
+  border-radius: 50%;
+  background: #081563;
+  height: 70%;
+  width: 80%;
+}
+.seat {
+  position:absolute;
+  width:20%;
+  height:16%;
+  left:40%;
+  background:grey;
+  border-radius:10%;
+
+  font-size:1.3vw;
+  text-align:center;
+}
+.seat.active {
+  background:#ccc;
+}
+.seat-0 {
+  top:-7%;
+}
+.seat-1 {
+  bottom:-7%
+}
+.top {
+  position:absolute;
+  height:40%;
+  width:100%;
+  top:5%
+}
+.bot {
+  position:absolute;
+  height:40%;
+  width:100%;
+  bottom:5%;
+}
+.card {
+  position:absolute;
+  height:0;
+  width:25%;
+  padding-top:35%;
+  box-sizing:border-box;
+  bottom:100%;
+
+  color:white;
+  font-size:3vw;
+}
+.card:nth-child(1) {
+  left:20%;
+}
+.card:nth-child(2) {
+  right:20%;
+}
+.card div {
+  position:absolute;
+  top:20%;
+  right:0;
+  bottom:0;
+  left:0;
+}
+.card.suit-h{
+  background-color:red;
+}
+.card.suit-s{
+  background-color:black;
+}
+.card.suit-d{
+  background-color:blue;
+}
+.card.suit-c{
+  background-color:green;
+}
+.card.suit-n{
+  background-color:#555;
+}
+ul.board {
+  position:absolute;
+  height:14%;
+  top:43%;
+  width:24%;
+  left:38%;
+  padding:0;
+  margin:0;
+}
+ul.board li{
+  position:relative;
+  float:left;
+  list-style:none;
+  width:18%;
+  margin-right:2%;
+  height:100%;
+}
+ul.board .card{
+  position:absolute;
+  width:100%;
+  height:100%;
+  top:0;
+  right:0;
+  bottom:0;
+  left:0;
+}

@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 const socket = require('socket.io-client')();
+import './Table.css'
 
 socket.on('connect', () => {
   console.log('connected');
@@ -68,7 +69,7 @@ class Table extends Component {
     let isFacingLimp = (this.state.communityCards.length === 0
                         && this.state.totalBetSize === this.state.BBSize)
     return(
-      <div className="table">
+      <div className="pokertable">
         <div>
           Pot Size:
           {this.state.potSize - this.state.betSize}
@@ -77,15 +78,17 @@ class Table extends Component {
           Bet Size:
           {this.state.betSize}
         </div>
-        <Seat seatInfo={this.state.seatList[0]}
-              seatNum={0}
-              cards={this.state.cardsBySeat[0]}
-              isActive={this.state.activeSeatNum === 0} />
-        <Seat seatInfo={this.state.seatList[1]}
-              seatNum={1}
-              cards={this.state.cardsBySeat[1]}
-              isActive={this.state.activeSeatNum === 1} />
-        <Board cards={this.state.communityCards} />
+        <div className="felt">
+          <Seat seatInfo={this.state.seatList[0]}
+                seatNum={0}
+                cards={this.state.cardsBySeat[0]}
+                isActive={this.state.activeSeatNum === 0} />
+          <Seat seatInfo={this.state.seatList[1]}
+                seatNum={1}
+                cards={this.state.cardsBySeat[1]}
+                isActive={this.state.activeSeatNum === 1} />
+          <Board cards={this.state.communityCards} />
+        </div>
         <ChatWindow />
         {this.state.heroNum !== null && this.state.heroNum === this.state.activeSeatNum &&
           <ActionWindow heroStackSize={this.state.seatList[this.state.heroNum].stackSize}
@@ -113,28 +116,29 @@ class Seat extends Component {
   }
 
   render() {
+    if (this.props.seatInfo.isEmpty){
+      var contents = (
+        <button onClick={this.handleSit}>Sit Here</button>
+      );
+    } else {
+      var contents = (
+        <div>
+          <div className="top">
+            Stack:
+            {' ' + this.props.seatInfo.stackSize}
+          </div>
+          <div className="bot">
+            Net:
+            {' ' + this.props.seatInfo.netWon}
+          </div>
+        </div>
+      );
+    }
     return (
-      <div className={this.props.isActive && "active"}>
+      <div className={"seat " + "seat-" + this.props.seatNum + (this.props.isActive ? " active" : "")}>
         <Card card={this.props.cards[0]} />
         <Card card={this.props.cards[1]} />
-        <div>
-          Stack Size:
-          {this.props.seatInfo.stackSize}
-        </div>
-        <div>
-          Net Won:
-          {this.props.seatInfo.netWon}
-        </div>
-        {this.props.isActive &&
-          <div>
-            Active
-          </div>
-        }
-        {this.props.seatInfo.isEmpty &&
-          <div>
-            <button onClick={this.handleSit}>Sit Here</button>
-          </div>
-        }
+        {contents}
         <Timer />
       </div>
     );
@@ -160,7 +164,7 @@ class Board extends Component {
       </li>
     );
     return (
-      <ul>
+      <ul className="board">
         {listItems}
       </ul>
     );
@@ -169,9 +173,16 @@ class Board extends Component {
 
 class Card extends Component {
   render() {
+    if (this.props.card) {
+      var suit = this.props.card[1];
+      var rank = this.props.card[0];
+    } else {
+      var suit = 'n';
+      var rank = '';
+    }
     return (
-      <div className="card">
-        <img src={this.props.card + '.svg'} alt={this.props.card} />
+      <div className={"card " + "suit-" + suit}>
+        <div>{rank}</div>
       </div>
     );
   }
