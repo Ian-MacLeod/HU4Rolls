@@ -130,9 +130,11 @@ class PokerTable(db.Model):
                 self.seats[1 - seat_num].net_won += (self.pot_size - self.bet_size) // 2
                 self.start_new_hand()
             db.session.commit()
+            state = self.get_state()
             if should_do_showdown:
+                db.session.expunge(self)
                 eventlet.spawn(self.do_showdown)
-            return self.get_state()
+            return state
 
     def advance_stage(self):
         self.active_seat = 1 - self.button
