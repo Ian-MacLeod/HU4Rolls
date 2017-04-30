@@ -1,5 +1,5 @@
-from hu4rolls import socketio
-from .models import db, PokerTable, Player
+from hu4rolls import socketio, db
+from .models import PokerTable, Player
 from flask_socketio import emit
 from flask import request
 

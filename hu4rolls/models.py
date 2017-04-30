@@ -1,11 +1,8 @@
-from hu4rolls import app, poker, socketio
-from flask_sqlalchemy import SQLAlchemy
+from hu4rolls import app, poker, socketio, db
 from flask_socketio import emit
 import random
 import enum
 import eventlet
-
-db = SQLAlchemy(app)
 
 
 class GameStage(enum.Enum):
