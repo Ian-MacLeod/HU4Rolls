@@ -105,6 +105,7 @@ class PokerTable(db.Model):
             seat_num = players.index(player_sid)
         else:
             return
+        should_do_showdown = False
         if self._is_valid_action(seat_num, action):
             if action['name'] == 'check':
                 if seat_num == self.button or self.stage is GameStage.preflop:
@@ -121,7 +122,7 @@ class PokerTable(db.Model):
                 self.put_in(seat_num, self.bet_size)
                 if self.seats[seat_num].stack_size == 0:
                     self.active_seat = None
-                    eventlet.spawn(self.do_showdown)
+                    should_do_showdown = True
                 elif (self.stage == GameStage.preflop
                       and self.total_bet_size == self.bb_size):
                     self.advance_active_seat()
@@ -132,6 +133,8 @@ class PokerTable(db.Model):
                 self.seats[1 - seat_num].net_won += (self.pot_size - self.bet_size) // 2
                 self.start_new_hand()
             db.session.commit()
+            if should_do_showdown:
+                eventlet.spawn(self.do_showdown)
             return self.get_state()
 
     def advance_stage(self):
