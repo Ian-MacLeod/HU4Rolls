@@ -24,6 +24,7 @@ class Table extends Component {
         isEmpty: true
       }],
       activeSeatNum: null,
+      button: 0,
       heroNum: null,
       potSize: 0,
       betSize: 0,
@@ -46,7 +47,7 @@ class Table extends Component {
       this.setState({heroNum: seatNum});
     });
     socket.on('show cards', (cards) => {
-      this.setState({'cardsBySeat': cards})
+      this.setState({'cardsBySeat': cards});
     })
     console.log('ready to receive');
     socket.emit('ready to receive');
@@ -83,11 +84,13 @@ class Table extends Component {
           <Seat seatInfo={this.state.seatList[0]}
                 seatNum={0}
                 cards={this.state.cardsBySeat[0]}
-                isActive={this.state.activeSeatNum === 0} />
+                isActive={this.state.activeSeatNum === 0}
+                isButton={this.state.button === 0} />
           <Seat seatInfo={this.state.seatList[1]}
                 seatNum={1}
                 cards={this.state.cardsBySeat[1]}
-                isActive={this.state.activeSeatNum === 1} />
+                isActive={this.state.activeSeatNum === 1}
+                isButton={this.state.button === 1} />
           <Board cards={this.state.communityCards} />
         </div>
         <ChatWindow />
@@ -135,10 +138,15 @@ class Seat extends Component {
         </div>
       );
     }
+    let button = '';
+    if (this.props.isButton){
+      button = <div className="dealer-button">D</div>;
+    }
     return (
       <div className={"seat " + "seat-" + this.props.seatNum + (this.props.isActive ? " active" : "")}>
         <Card card={this.props.cards[0]} />
         <Card card={this.props.cards[1]} />
+        {button}
         <div className="invested">
           {this.props.seatInfo.amountInvested || ''}
         </div>

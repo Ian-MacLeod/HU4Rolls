@@ -46,6 +46,24 @@
   bottom:-50%;
   color:white;
 }
+.dealer-button {
+  height:40%;
+  width:16%;
+  background: #edd925;
+  border-radius: 50%;
+  font-size:1.5vw;
+  line-height:140%;
+}
+.seat-0 .dealer-button {
+  position:absolute;
+  right:0;
+  bottom:-50%;
+}
+.seat-1 .dealer-button {
+  position:absolute;
+  right:0;
+  top:-50%;
+}
 .top {
   position:absolute;
   height:40%;
