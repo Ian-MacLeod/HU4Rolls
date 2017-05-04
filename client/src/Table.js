@@ -97,9 +97,11 @@ class Table extends Component {
         {this.state.heroNum !== null && this.state.heroNum === this.state.activeSeatNum &&
           <ActionWindow heroStackSize={this.state.seatList[this.state.heroNum].stackSize}
                         betSize={this.state.betSize}
+                        potSize={this.state.potSize}
                         totalBetSize={this.state.totalBetSize}
                         BBSize={this.state.BBSize}
-                        isFacingLimp={isFacingLimp}/>
+                        isFacingLimp={isFacingLimp}
+                        amountInvested={this.state.seatList[this.state.heroNum].amountInvested} />
         }
         <button onClick={this.clearTable}>Clear Table</button>
         <button onClick={this.leaveTable}>Leave Table</button>
@@ -242,7 +244,7 @@ class ChatWindow extends Component {
           <div ref={(el) => { this.lastChat = el }}></div>
         </div>
         <form onSubmit={this.sendMessage}>
-          <input type="text" value={this.state.messageInput} onChange={this.handleChange} />
+          <input type="text" className="chat-message" value={this.state.messageInput} onChange={this.handleChange} />
           <input type="submit" value="Send Message" />
         </form>
       </div>
@@ -257,6 +259,7 @@ class ActionWindow extends Component {
     this.handleInputChange = this.handleInputChange.bind(this);
     this.submitAction = this.submitAction.bind(this);
     this.handleKeyDown = this.handleKeyDown.bind(this);
+    this.setBetToPotRatio = this.setBetToPotRatio.bind(this);
   }
 
   submitAction(action) {
@@ -290,6 +293,14 @@ class ActionWindow extends Component {
     return betSize;
   }
 
+  setBetToPotRatio(ratio){
+    return function(){
+      let potSizeBet = (this.props.amountInvested + this.props.betSize
+                        + ratio * (this.props.potSize + this.props.betSize));
+      this.setState({inputBetSize: potSizeBet});
+    }.bind(this)
+  }
+
   render() {
     if (this.props.betSize){
       var aggressive_action = "raise";
@@ -306,19 +317,26 @@ class ActionWindow extends Component {
       var passive_action = "check";
       var passive_text = "Check";
     }
-    let aggressive_button = '';
+    let aggressive_buttons = '';
     if (this.props.heroStackSize > this.props.betSize){
-      aggressive_button = <ActionButton handleClick={this.submitAction(aggressive_action)}
-                                        text={aggressive_text} />
+      aggressive_buttons = [
+        <ActionButton handleClick={this.submitAction(aggressive_action)}
+                      text={aggressive_text} />,
+        <div className="bet-size-buttons">
+          <button onClick={this.setBetToPotRatio(1)}>Pot</button>
+          <button onClick={this.setBetToPotRatio(3/4)}>3/4 Pot</button>
+          <button onClick={this.setBetToPotRatio(1/2)}>1/2 Pot</button>
+        </div>,
+        <input type="text" value={this.state.inputBetSize}
+               onChange={this.handleInputChange}
+               onKeyDown={this.handleKeyDown(aggressive_action)}/>
+      ]
     }
     return (
       <div className="action-window">
         <ActionButton handleClick={this.submitAction("fold")} text="Fold" />
         <ActionButton handleClick={this.submitAction(passive_action)} text={passive_text} />
-        {aggressive_button}
-        <input type="text" value={this.state.inputBetSize}
-               onChange={this.handleInputChange}
-               onKeyDown={this.handleKeyDown(aggressive_action)}/>
+        {aggressive_buttons}
       </div>
     );
   }
