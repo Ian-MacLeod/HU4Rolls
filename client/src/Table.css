@@ -6,6 +6,9 @@
   padding-top: 52%;
   box-sizing: border-box;
 }
+.pokertable button {
+  padding:0;
+}
 .felt {
   position: absolute;
   top: 15%;
@@ -33,6 +36,7 @@
   width:70%;
   top:15%;
   left:15%;
+  font-size:1.4vw
 }
 .seat.active {
   background:#ccc;
