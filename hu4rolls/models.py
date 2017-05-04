@@ -240,6 +240,8 @@ class PokerTable(db.Model):
                 seat.stack_size = None
                 seat.amount_invested = 0
                 new_state = self.get_state()
+        self.stage = GameStage.preflop
+        self.pot_size = 0
         db.session.commit()
         return new_state
 
@@ -263,37 +265,3 @@ class PokerTable(db.Model):
             return self.community_cards.split()[:self.stage.value]
         else:
             return []
-
-
-"""
-from pbkdf2 import pbkdf2_hmac, compare_digest
-from random import SystemRandom
-from flask_login import UserMixin
-
-
-
-
-class User(UserMixin, db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(15), unique=True)
-    _hashed_password = db.Column(db.LargeBinary(120))
-    _salt = db.Column(db.String(16))
-
-    def set_password(self, new_pwd):
-        if self._salt is None:
-            self._salt = SystemRandom().getrandbits(128).to_bytes(16, byteorder='big')
-        self._password = self._hash_password(new_pwd)
-
-    def check_password(self, pwd):
-        hashed_pwd = self._hash_password(pwd)
-        return compare_digest(hashed_pwd, self._hashed_password)
-
-    def _hash_password(self, pwd):
-        pwd = pwd.encode("utf-8")
-        salt = bytes(self._salt)
-        buff = pbkdf2_hmac("sha512", pwd, salt, iterations=100000)
-        return bytes(buff)
-
-    def __repr__(self):
-        return '<User {:d}'.format(self.id)
-"""
