@@ -240,8 +240,7 @@ class PokerTable(db.Model):
                 seat.stack_size = None
                 seat.amount_invested = 0
                 new_state = self.get_state()
-        self.stage = GameStage.preflop
-        self.pot_size = 0
+        self.active_player = None
         db.session.commit()
         return new_state
 
