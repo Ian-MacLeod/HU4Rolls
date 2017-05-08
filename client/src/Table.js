@@ -286,6 +286,11 @@ class ActionWindow extends Component {
 
   getConstrainedBetSize(){
     let betSize = parseInt(this.state.inputBetSize) || 0;
+    return this.constrainBetSize(betSize);
+  }
+
+  constrainBetSize(betSize){
+    betSize = parseInt(betSize);
     let minBetSize = this.props.totalBetSize + Math.max(this.props.betSize, this.props.BBSize);
     let maxBetSize = this.props.heroStackSize + this.props.totalBetSize - this.props.betSize;
     betSize = Math.max(minBetSize, betSize);
@@ -297,7 +302,7 @@ class ActionWindow extends Component {
     return function(){
       let potSizeBet = (this.props.amountInvested + this.props.betSize
                         + ratio * (this.props.potSize + this.props.betSize));
-      this.setState({inputBetSize: potSizeBet});
+      this.setState({inputBetSize: this.constrainBetSize(potSizeBet)});
     }.bind(this)
   }
 
