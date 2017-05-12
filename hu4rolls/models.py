@@ -1,5 +1,5 @@
 from hu4rolls import app, poker, socketio, db
-from flask_socketio import emit
+from sqlalchemy.ext.hybrid import hybrid_property
 import random
 import enum
 import eventlet
@@ -14,9 +14,7 @@ class GameStage(enum.Enum):
     def next(self):
         cls = self.__class__
         members = list(cls)
-        index = members.index(self) + 1
-        if index > len(members):
-            index = 0
+        index = (members.index(self) + 1) % len(members)
         return members[index]
 
 
@@ -57,19 +55,38 @@ class PokerTable(db.Model):
     bet_size = db.Column(db.Integer)
     total_bet_size = db.Column(db.Integer)
     button = db.Column(db.Integer)
-    active_seat = db.Column(db.Integer)
+    _active_seat = db.Column('active_seat', db.Integer)
     stage = db.Column(db.Enum(GameStage))
+    hand_num = db.Column(db.Integer)
+    action_num = db.Column(db.Integer)
+    turn_duration = db.Column(db.Integer)
 
-    def __init__(self, name, bb_size=100, max_buyin_bbs=100, num_seats=2):
+    @hybrid_property
+    def active_seat(self):
+        return self._active_seat
+
+    @active_seat.setter
+    def active_seat(self, value):
+        if value is not None and self.turn_duration:
+            eventlet.spawn(start_timeout(table_id=self.id,
+                                         hand_num=self.hand_num,
+                                         action_num=self.action_num,
+                                         turn_duration=self.turn_duration))
+        self._active_seat = value
+
+    def __init__(self, name, turn_duration=30, bb_size=100, max_buyin_bbs=100,
+                 num_seats=2):
         self.name = name
+        self.turn_duration = turn_duration
         self.bb_size = bb_size
         self.max_buyin_bbs = max_buyin_bbs
+        self.hand_num = 0
+        self.action_num = 0
         for i in range(num_seats):
             seat = Seat(i)
             self.seats.append(seat)
 
     def _is_valid_action(self, seat_num, action):
-        emit('active_seat', str(self.active_seat))
         if self.active_seat != seat_num:
             return False
         seat = self.seats[seat_num]
@@ -149,6 +166,8 @@ class PokerTable(db.Model):
 
     def start_new_hand(self):
         self.stage = GameStage.preflop
+        self.hand_num += 1
+        self.action_num = 0
         if self.button is None:
             self.button = random.choice(range(2))
         else:
@@ -165,6 +184,7 @@ class PokerTable(db.Model):
         self.deal_hands()
 
     def advance_active_seat(self):
+        self.action_num += 1
         self.active_seat += 1
         self.active_seat %= len(self.seats)
 
@@ -240,7 +260,7 @@ class PokerTable(db.Model):
                 seat.stack_size = None
                 seat.amount_invested = 0
                 new_state = self.get_state()
-        self.active_player = None
+        self.active_seat = None
         db.session.commit()
         return new_state
 
@@ -264,3 +284,18 @@ class PokerTable(db.Model):
             return self.community_cards.split()[:self.stage.value]
         else:
             return []
+
+
+def start_timeout(table_id, hand_num, action_num, turn_duration):
+    def timeout():
+        eventlet.sleep(turn_duration)
+        with app.app_context():
+            table = PokerTable.query.get(table_id)
+            socketio.emit('test', {'hand_num': [table.hand_num, hand_num],
+                                   'action_num': [table.action_num, action_num]})
+            if hand_num == table.hand_num and action_num == table.action_num:
+                db.session.add(table)
+                table.do_action(table.seats[table.active_seat].player_id,
+                                {'name': 'fold'})
+                socketio.emit('new state', table.get_state())
+    return timeout
