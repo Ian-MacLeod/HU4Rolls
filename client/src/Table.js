@@ -122,12 +122,13 @@ class Seat extends Component {
   }
 
   render() {
+    let contents;
     if (this.props.seatInfo.isEmpty){
-      var contents = (
+      contents = (
         <button onClick={this.handleSit}>Sit Here</button>
       );
     } else {
-      var contents = (
+      contents = (
         <div>
           <div className="top">
             Stack:
@@ -145,7 +146,7 @@ class Seat extends Component {
       button = <div className="dealer-button">D</div>;
     }
     return (
-      <div className={"seat " + "seat-" + this.props.seatNum + (this.props.isActive ? " active" : "")}>
+      <div className={"seat seat-" + this.props.seatNum + (this.props.isActive ? " active" : "")}>
         <Card card={this.props.cards[0]} />
         <Card card={this.props.cards[1]} />
         {button}
@@ -187,15 +188,14 @@ class Board extends Component {
 
 class Card extends Component {
   render() {
+    let suit = 'n';
+    let rank = ''
     if (this.props.card) {
-      var suit = this.props.card[1];
-      var rank = this.props.card[0];
-    } else {
-      var suit = 'n';
-      var rank = '';
+      suit = this.props.card[1];
+      rank = this.props.card[0];
     }
     return (
-      <div className={"card " + "suit-" + suit}>
+      <div className={"card suit-" + suit}>
         <div>{rank}</div>
       </div>
     );
