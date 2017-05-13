@@ -130,11 +130,11 @@ class Seat extends Component {
     } else {
       contents = (
         <div>
-          <div className="top">
+          <div className="stack">
             Stack:
             {' ' + this.props.seatInfo.stackSize}
           </div>
-          <div className="bot">
+          <div className="net">
             Net:
             {' ' + this.props.seatInfo.netWon}
           </div>
@@ -154,18 +154,42 @@ class Seat extends Component {
           {this.props.seatInfo.amountInvested || ''}
         </div>
         {contents}
-        <Timer />
+        <Timer isActive={this.props.isActive} />
       </div>
     );
   }
 }
 
 class Timer extends Component {
+  constructor(){
+    super();
+    this.state = {timeRemaining: 0};
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (this.props.isActive !== nextProps.isActive) {
+      clearInterval(this.timerId);
+      if (nextProps.isActive) {
+        this.setState({timeRemaining: 30}); // Change later
+        this.timerId = setInterval(
+          () => this.tick(),
+          1000
+        );
+      }
+    }
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.timerId);
+  }
+
+  tick() {
+    this.setState({timeRemaining: this.state.timeRemaining - 1});
+  }
+
   render() {
     return (
-      <div>
-        {this.props.time_remaining}
-      </div>
+      <div className="timer">{this.props.isActive && this.state.timeRemaining}</div>
     );
   }
 }

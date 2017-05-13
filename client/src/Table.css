@@ -87,18 +87,22 @@
   top: -50%;
 }
 
-.top {
+.stack {
   position: absolute;
-  height: 40%;
   width: 100%;
   top: 5%;
 }
 
-.bot {
+.net {
   position: absolute;
-  height: 40%;
   width: 100%;
-  bottom: 5%;
+  top: 40%;
+}
+
+.timer {
+  position: absolute;
+  width: 100%;
+  top: 70%;
 }
 
 .card {
