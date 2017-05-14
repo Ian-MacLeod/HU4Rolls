@@ -166,16 +166,14 @@ class Timer extends Component {
     this.state = {timeRemaining: 0};
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (this.props.isActive !== nextProps.isActive) {
-      clearInterval(this.timerId);
-      if (nextProps.isActive) {
-        this.setState({timeRemaining: 30}); // Change later
-        this.timerId = setInterval(
-          () => this.tick(),
-          1000
-        );
-      }
+  componentWillReceiveProps(nextProps) { //Fragile, when does this get called?
+    clearInterval(this.timerId);
+    if (nextProps.isActive) {
+      this.setState({timeRemaining: 30}); // Change later
+      this.timerId = setInterval(
+        () => this.tick(),
+        1000
+      );
     }
   }
 
