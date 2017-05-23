@@ -47,7 +47,9 @@ class Seat(db.Model):
 class PokerTable(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(20), unique=True)
-    seats = db.relationship('Seat', order_by='Seat.number')
+    seats = db.relationship('Seat',
+                            order_by='Seat.number',
+                            cascade="save-update, merge, delete")
     bb_size = db.Column(db.Integer)
     max_buyin_bbs = db.Column(db.Integer)
     community_cards = db.Column(db.String)
@@ -201,6 +203,9 @@ class PokerTable(db.Model):
 
     def is_full(self):
         return all(s.player_id for s in self.seats)
+
+    def is_empty(self):
+        return not any(s.player_id for s in self.seats)
 
     def put_in(self, seat_num, amount):
         self.seats[seat_num].stack_size -= amount

@@ -1,0 +1,50 @@
+from .models import PokerTable
+from hu4rolls import app, db, socketio
+import eventlet
+import random
+
+
+ADJECTIVES = ["autumn", "hidden", "bitter", "misty", "silent",
+              "reckless", "daunting", "short", "rising", "strong", "timber", "tumbling",
+              "silver", "dusty", "celestial", "cosmic", "crescent", "double", "far",
+              "terrestrial", "huge", "deep", "epic", "titanic", "mighty", "powerful"]
+NOUNS = ["waterfall", "river", "breeze", "moon", "rain",
+         "wind", "sea", "morning", "snow", "lake", "sunset", "pine", "shadow", "leaf",
+         "sequoia", "cedar", "wrath", "blessing", "spirit", "nova", "storm", "burst",
+         "giant", "elemental", "throne", "game", "weed", "stone", "apogee", "bang"]
+
+
+def update_lobby():
+    while True:
+        adjust_number_of_tables()
+        update_existing_tables()
+        eventlet.sleep(15)
+
+
+def update_existing_tables():
+    pass
+
+
+def adjust_number_of_tables():
+    with app.app_context():
+        tables = PokerTable.query.all()
+        empty_tables = [t for t in tables if t.is_empty()]
+        if len(empty_tables) < 1:
+            while True:
+                new_name = generate_table_name()
+                if not PokerTable.query.filter_by(name=new_name).first():
+                    new_table = PokerTable(new_name)
+                    db.session.add(new_table)
+                    db.session.commit()
+                    break
+        elif len(empty_tables) > 1:
+            for t in empty_tables[1:]:
+                db.session.delete(t)
+                db.session.commit()
+
+
+def generate_table_name():
+    adj = random.choice(ADJECTIVES)
+    noun = random.choice(NOUNS)
+    num = str(random.choice(range(1, 100)))
+    return adj + ' ' + noun + ' ' + num
