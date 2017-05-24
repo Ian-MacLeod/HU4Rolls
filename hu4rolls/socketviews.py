@@ -23,8 +23,8 @@ def join_table(table_name):
 
 @socketio.on('get table list')
 def send_table_list():
-    table_names = [table.name for table in PokerTable.query.all()]
-    emit('table list', table_names)
+    table_list = PokerTable.get_lobby_table_list()
+    emit('table list', table_list)
 
 
 @socketio.on('get state')

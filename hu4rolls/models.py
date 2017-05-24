@@ -88,6 +88,16 @@ class PokerTable(db.Model):
             seat = Seat(i)
             self.seats.append(seat)
 
+    @classmethod
+    def get_lobby_table_list(cls):
+        tables = [table.get_summary() for table in cls.query.all()]
+        return tables
+
+    def get_summary(self):
+        return {'name': self.name,
+                'numSeats': len(self.seats),
+                'seatsTaken': len([s for s in self.seats if s.player_id is not None])}
+
     def _is_valid_action(self, seat_num, action):
         if self.active_seat != seat_num:
             return False

@@ -5,7 +5,7 @@ import './Lobby.css'
 class Lobby extends Component {
   constructor() {
     super();
-    this.state = {tableList: ['test', 'a', 'b', 'c'],
+    this.state = {tableList: [],
                   selectedTable: null};
     this.selectTable = this.selectTable.bind(this);
     this.joinTable = this.joinTable.bind(this);
@@ -13,9 +13,14 @@ class Lobby extends Component {
 
   componentDidMount() {
     this.props.socket.on('table list', tableList => {
-      this.setState({tableList: tableList});
+      this.setState({tableList: tableList || []});
     });
+    console.log('getting list')
     this.props.socket.emit('get table list');
+    setTimeout(function(){
+      console.log('getting list')
+      this.props.socket.emit('get table list');
+    }.bind(this), 1000);
   }
 
   selectTable(tableName) {
@@ -31,11 +36,11 @@ class Lobby extends Component {
   }
 
   render() {
-    const tableItems = this.state.tableList.map(tableName =>
-      <li key={tableName}
-          className={tableName === this.state.selectedTable ? 'selected' : ''}
-          onClick={this.selectTable(tableName)}>
-        {tableName}
+    const tableItems = this.state.tableList.map(tableInfo =>
+      <li key={tableInfo.name}
+          className={tableInfo.name === this.state.selectedTable ? 'selected' : ''}
+          onClick={this.selectTable(tableInfo.name)}>
+        {tableInfo.name}, {tableInfo.seatsTaken}/{tableInfo.numSeats}
       </li>
     );
     return (

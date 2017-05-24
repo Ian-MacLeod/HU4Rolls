@@ -22,7 +22,9 @@ def update_lobby():
 
 
 def update_existing_tables():
-    pass
+    with app.app_context():
+        table_list = PokerTable.get_lobby_table_list()
+        socketio.emit('table list', table_list)
 
 
 def adjust_number_of_tables():
@@ -37,7 +39,7 @@ def adjust_number_of_tables():
                     db.session.add(new_table)
                     db.session.commit()
                     break
-        elif len(empty_tables) > 1:
+        if len(empty_tables) > 1:
             for t in empty_tables[1:]:
                 db.session.delete(t)
                 db.session.commit()
