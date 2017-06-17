@@ -23,18 +23,19 @@ class App extends Component {
   }
 
   render() {
-    let content;
-    if (this.state.openTable === null){
-      content = <Lobby joinTable={this.joinTable} socket={socket} />
-    } else {
-      content = <Table numSeats={2}
-                       socket={socket}
-                       tableName={this.state.openTable}
-                       toLobby={this.toLobby} />
+    let table = '';
+    if (this.state.openTable !== null){
+      table = <Table numSeats={2}
+                     socket={socket}
+                     tableName={this.state.openTable}
+                     toLobby={this.toLobby} />
     }
     return (
       <div>
-        {content}
+        <Lobby hidden={this.state.openTable !== null}
+               joinTable={this.joinTable}
+               socket={socket} />
+        {table}
       </div>
     );
   }

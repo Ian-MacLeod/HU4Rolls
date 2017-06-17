@@ -44,7 +44,7 @@ class Lobby extends Component {
       </li>
     );
     return (
-      <div>
+      <div className={this.props.hidden ? 'hide' : ''}>
         <ul>
           {tableItems}
         </ul>
