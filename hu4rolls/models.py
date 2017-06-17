@@ -227,7 +227,7 @@ class PokerTable(db.Model):
 
     def deal_hands(self):
         cards_needed = 2 * len(self.seats) + 5
-        cards = [c.to_str() for c in poker.make_random_hand(cards_needed)]
+        cards = [str(c) for c in poker.make_random_hand(cards_needed)]
         self.community_cards = ' '.join(cards[:5])
         for i in range(len(self.seats)):
             self.seats[i].hand = ' '.join(cards[2 * i + 5: 2 * i + 7])

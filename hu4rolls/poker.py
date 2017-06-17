@@ -17,7 +17,7 @@ class Card:
     def from_str(cls, s):
         return cls(cls.RANKS.index(s[0]), cls.SUITS.index(s[1]))
 
-    def to_str(self):
+    def __str__(self):
         return self.RANKS[self.rank] + self.SUITS[self.suit]
 
     def __eq__(self, other):

@@ -31,6 +31,7 @@ class Table extends Component {
     }
     this.clearTable = this.clearTable.bind(this);
     this.leaveTable = this.leaveTable.bind(this);
+    this.backToLobby = this.backToLobby.bind(this);
   }
 
   componentDidMount() {
@@ -57,6 +58,11 @@ class Table extends Component {
 
   leaveTable(){
     this.props.socket.emit('leave table', this.props.tableName);
+  }
+
+  backToLobby(){
+    this.leaveTable();
+    this.props.toLobby();
   }
 
   showCardsAtSeat(cards, seatNum) {
@@ -112,6 +118,7 @@ class Table extends Component {
         }
         <button onClick={this.clearTable}>Clear Table</button>
         <button onClick={this.leaveTable}>Leave Table</button>
+        <button onClick={this.backToLobby}>Back to Lobby</button>
       </div>
     );
   }
