@@ -47,11 +47,11 @@
 }
 
 .seat-0 {
-  top: -9%;
+  top: -6%;
 }
 
 .seat-1 {
-  bottom: -9%;
+  bottom: -6%;
 }
 
 .seat-1 .invested {
@@ -259,4 +259,19 @@ ul.board .card {
   height: 20%;
   width: 40%;
   font-size: 1.6vw;
+}
+
+div.meta-buttons {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+div.meta-buttons button {
+  width: 12vw;
+  padding: 0.5vw;
+  font-size: 1.5vw;
+  float: left;
+  clear: left;
+  margin-top: 0.5vw;
 }

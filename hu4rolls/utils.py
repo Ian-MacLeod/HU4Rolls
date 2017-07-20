@@ -3,6 +3,8 @@ from hu4rolls import app, db, socketio
 import eventlet
 import random
 
+EMPTY_TABLES_PER_TYPE = 2
+LOBBY_UPDATE_FREQUENCY = 10
 
 ADJECTIVES = ["autumn", "hidden", "bitter", "misty", "silent",
               "reckless", "daunting", "short", "rising", "strong", "timber", "tumbling",
@@ -18,7 +20,7 @@ def update_lobby():
     while True:
         adjust_number_of_tables()
         update_existing_tables()
-        eventlet.sleep(15)
+        eventlet.sleep(LOBBY_UPDATE_FREQUENCY)
 
 
 def update_existing_tables():
@@ -31,7 +33,7 @@ def adjust_number_of_tables():
     with app.app_context():
         tables = PokerTable.query.all()
         empty_tables = [t for t in tables if t.is_empty()]
-        if len(empty_tables) < 1:
+        if len(empty_tables) < EMPTY_TABLES_PER_TYPE:
             while True:
                 new_name = generate_table_name()
                 if not PokerTable.query.filter_by(name=new_name).first():
@@ -39,8 +41,8 @@ def adjust_number_of_tables():
                     db.session.add(new_table)
                     db.session.commit()
                     break
-        if len(empty_tables) > 1:
-            for t in empty_tables[1:]:
+        if len(empty_tables) > EMPTY_TABLES_PER_TYPE:
+            for t in empty_tables[EMPTY_TABLES_PER_TYPE:]:
                 db.session.delete(t)
                 db.session.commit()
 
@@ -48,5 +50,4 @@ def adjust_number_of_tables():
 def generate_table_name():
     adj = random.choice(ADJECTIVES)
     noun = random.choice(NOUNS)
-    num = str(random.choice(range(1, 100)))
-    return adj + ' ' + noun + ' ' + num
+    return adj + ' ' + noun

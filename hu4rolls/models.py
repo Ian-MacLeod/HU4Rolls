@@ -306,13 +306,9 @@ def start_timeout(table_id, hand_num, action_num, turn_duration):
         eventlet.sleep(turn_duration)
         with app.app_context():
             table = PokerTable.query.get(table_id)
-            socketio.emit('test', {'hand_num': [hand_num, table.hand_num],
-                                   'action_num': [action_num, table.action_num],
-                                   'active_seat': table.active_seat})
             if (hand_num == table.hand_num
                     and action_num == table.action_num
                     and table.active_seat is not None):
-                socketio.emit('test2')
                 db.session.add(table)
                 table.do_action(table.seats[table.active_seat].player_id,
                                 {'name': 'fold'})

@@ -116,9 +116,11 @@ class Table extends Component {
                         tableName={this.props.tableName}
                         socket={this.props.socket}/>
         }
-        <button onClick={this.clearTable}>Clear Table</button>
-        <button onClick={this.leaveTable}>Leave Table</button>
-        <button onClick={this.backToLobby}>Back to Lobby</button>
+        <div className="meta-buttons">
+          <button onClick={this.backToLobby}>Back to Lobby</button>
+          <button onClick={this.leaveTable}>Stand Up</button>
+          <button onClick={this.clearTable}>Clear Table</button>
+        </div>
       </div>
     );
   }

@@ -37,17 +37,28 @@ class Lobby extends Component {
 
   render() {
     const tableItems = this.state.tableList.map(tableInfo =>
-      <li key={tableInfo.name}
+      <tr key={tableInfo.name}
           className={tableInfo.name === this.state.selectedTable ? 'selected' : ''}
           onClick={this.selectTable(tableInfo.name)}>
-        {tableInfo.name}, {tableInfo.seatsTaken}/{tableInfo.numSeats}
-      </li>
+        <td>{tableInfo.name}</td>
+        <td>{tableInfo.seatsTaken}/{tableInfo.numSeats}</td>
+      </tr>
     );
     return (
       <div className={this.props.hidden ? 'hide' : ''}>
-        <ul>
-          {tableItems}
-        </ul>
+        <table className="tables">
+          <tbody>
+            <tr>
+              <td>
+                Table Name
+              </td>
+              <td>
+                Players
+              </td>
+            </tr>
+            {tableItems}
+          </tbody>
+        </table>
         <button onClick={this.joinTable}>Join Table</button>
       </div>
     )

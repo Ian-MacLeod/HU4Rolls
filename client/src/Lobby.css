@@ -1,3 +1,11 @@
-li.selected {
+table.tables tr {
+  cursor: pointer;
+}
+
+table.tables tr.selected {
   background-color: #ccc;
+}
+
+table.tables td {
+  padding: 5px;
 }
