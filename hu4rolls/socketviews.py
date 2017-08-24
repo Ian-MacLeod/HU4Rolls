@@ -58,21 +58,21 @@ def seat_player(seat):
 
 @socketio.on('do action')
 def do_action(action):
-    table = PokerTable.query.filter_by(name=action['table_name']).first()
+    table_name = action['table_name']
+    table = PokerTable.query.filter_by(name=table_name).first()
     new_state = table.do_action(request.sid, action)
     if new_state is not None:
-        emit('new state', new_state, broadcast=True)
+        emit('new state', new_state, room=table_name)
 
 
 @socketio.on('disconnect')
 def player_disconnect():
-    table = PokerTable.query.get(1)
     tables = PokerTable.query.join(PokerTable.seats, aliased=True)\
         .filter_by(player_id=request.sid).all()
     for table in tables:
         new_state = table.remove_player(request.sid)
         if new_state is not None:
-            emit('new state', new_state, broadcast=True)
+            emit('new state', new_state, room=table.name)
 
 
 @socketio.on('leave table')
@@ -80,4 +80,4 @@ def player_leave(table_name):
     table = PokerTable.query.filter_by(name=table_name).first()
     new_state = table.remove_player(request.sid)
     if new_state is not None:
-        emit('new state', new_state, broadcast=True)
+        emit('new state', new_state, room=table_name)
