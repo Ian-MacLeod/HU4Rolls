@@ -3,8 +3,8 @@ from hu4rolls import app, db, socketio
 import eventlet
 import random
 
-EMPTY_TABLES_PER_TYPE = 2
-LOBBY_UPDATE_FREQUENCY = 10
+EMPTY_TABLES_PER_TYPE = app.config['EMPTY_TABLES_PER_TYPE']
+LOBBY_UPDATE_FREQUENCY_SECONDS = app.config['LOBBY_UPDATE_FREQUENCY_SECONDS']
 
 ADJECTIVES = ["autumn", "hidden", "bitter", "misty", "silent",
               "reckless", "daunting", "short", "rising", "strong", "timber", "tumbling",
@@ -20,7 +20,7 @@ def update_lobby():
     while True:
         adjust_number_of_tables()
         update_existing_tables()
-        eventlet.sleep(LOBBY_UPDATE_FREQUENCY)
+        eventlet.sleep(LOBBY_UPDATE_FREQUENCY_SECONDS)
 
 
 def update_existing_tables():
