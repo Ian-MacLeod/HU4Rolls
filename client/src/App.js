@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
-import './App.css';
-import Table from './Table'
-import Lobby from './Lobby'
+import Table from './components/Table'
+import Lobby from './components/Lobby'
 const socket = require('socket.io-client')();
 
 

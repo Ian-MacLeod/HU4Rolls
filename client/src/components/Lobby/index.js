@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import './Lobby.css'
+import './styles.css';
 
 
 class Lobby extends Component {
@@ -65,4 +65,4 @@ class Lobby extends Component {
   }
 }
 
-export default Lobby
+export default Lobby;
