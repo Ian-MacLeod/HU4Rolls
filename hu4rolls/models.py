@@ -43,6 +43,12 @@ class Seat(db.Model):
         self.net_won = 0
         self.amount_invested = 0
 
+    def clear(self):
+        self.player_id = None
+        self.net_won = 0
+        self.stack_size = None
+        self.amount_invested = 0
+
 
 class PokerTable(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -267,17 +273,17 @@ class PokerTable(db.Model):
         return poker.evaluate_hand(hand)
 
     def remove_player(self, player_sid):
-        new_state = None
+        did_remove_player = False
         for seat in self.seats:
             if seat.player_id == player_sid:
-                seat.player_id = None
-                seat.net_won = 0
-                seat.stack_size = None
-                seat.amount_invested = 0
-                new_state = self.get_state()
+                seat.clear()
+                self.pot_size = 0
+                self.bet_size = 0
+                self.stage = GameStage.preflop
+                did_remove_player = True
         self.active_seat = None
         db.session.commit()
-        return new_state
+        return self.get_state() if did_remove_player else None
 
     def get_state(self):
         return {
