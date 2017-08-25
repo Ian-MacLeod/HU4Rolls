@@ -254,18 +254,18 @@ class PokerTable(db.Model):
             seat0_hand = self.seat_hand_strength(0)
             seat1_hand = self.seat_hand_strength(1)
             if seat0_hand > seat1_hand:
-                self.seats[0].net_won += self.pot_size // 2
-                self.seats[1].net_won -= self.pot_size // 2
+                self.award_pot_to(0)
             elif seat0_hand < seat1_hand:
-                self.seats[0].net_won -= self.pot_size // 2
-                self.seats[1].net_won += self.pot_size // 2
-            else:
-                pass
+                self.award_pot_to(1)
             db.session.commit()
             eventlet.sleep(1)
             self.start_new_hand()
             db.session.commit()
             socketio.emit('new state', self.get_state())
+
+    def award_pot_to(self, seat_num):
+        self.seats[seat_num].net_won += self.pot_size // 2
+        self.seats[1 - seat_num].net_won -= self.pot_size // 2
 
     def seat_hand_strength(self, seat_num):
         card_strings = self.community_cards.split() + self.seats[seat_num].hand.split()
@@ -274,9 +274,11 @@ class PokerTable(db.Model):
 
     def remove_player(self, player_sid):
         did_remove_player = False
-        for seat in self.seats:
+        for seat_num, seat in enumerate(self.seats):
             if seat.player_id == player_sid:
                 seat.clear()
+                self.pot_size -= self.bet_size
+                self.award_pot_to(1 - seat_num)
                 self.pot_size = 0
                 self.bet_size = 0
                 self.stage = GameStage.preflop
