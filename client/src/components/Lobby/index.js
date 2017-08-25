@@ -13,12 +13,16 @@ class Lobby extends Component {
 
   componentDidMount() {
     this.props.socket.on('table list', tableList => {
-      this.setState({tableList: tableList || []});
+      let new_state = {tableList: tableList || []};
+      if(tableList.length && tableList.indexOf(this.state.selectedTable) === -1){
+        new_state.selectedTable = tableList[0].name;
+      }
+      this.setState(new_state);
     });
-    console.log('getting list')
+    console.log('getting list');
     this.props.socket.emit('get table list');
     setTimeout(function(){
-      console.log('getting list')
+      console.log('getting list');
       this.props.socket.emit('get table list');
     }.bind(this), 1000);
   }
