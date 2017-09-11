@@ -245,12 +245,13 @@ class PokerTable(db.Model):
         with app.app_context():
             db.session.add(self)
             socketio.emit('show cards',
-                          [self.seats[0].hand.split(), self.seats[1].hand.split()])
+                          [self.seats[0].hand.split(), self.seats[1].hand.split()],
+                          room=self.name)
             while self.stage != GameStage.river:
                 eventlet.sleep(1)
                 self.stage = self.stage.next()
                 db.session.commit()
-                socketio.emit('new state', self.get_state())
+                socketio.emit('new state', self.get_state(), room=self.name)
             seat0_hand = self.seat_hand_strength(0)
             seat1_hand = self.seat_hand_strength(1)
             if seat0_hand > seat1_hand:
@@ -261,7 +262,7 @@ class PokerTable(db.Model):
             eventlet.sleep(1)
             self.start_new_hand()
             db.session.commit()
-            socketio.emit('new state', self.get_state())
+            socketio.emit('new state', self.get_state(), room=self.name)
 
     def award_pot_to(self, seat_num):
         self.seats[seat_num].net_won += self.pot_size // 2
@@ -281,7 +282,10 @@ class PokerTable(db.Model):
                 self.award_pot_to(1 - seat_num)
                 self.pot_size = 0
                 self.bet_size = 0
+                self.total_bet_size = 0
                 self.stage = GameStage.preflop
+                for seat in self.seats:
+                    seat.amount_invested = 0
                 did_remove_player = True
         self.active_seat = None
         db.session.commit()
@@ -318,7 +322,7 @@ def start_timeout(table_id, hand_num, action_num, turn_duration):
                     and action_num == table.action_num
                     and table.active_seat is not None):
                 db.session.add(table)
-                table.do_action(table.seats[table.active_seat].player_id,
-                                {'name': 'fold'})
-                socketio.emit('new state', table.get_state())
+                new_state = table.do_action(table.seats[table.active_seat].player_id,
+                                            {'name': 'fold'})
+                socketio.emit('new state', new_state, room=table.name)
     return timeout

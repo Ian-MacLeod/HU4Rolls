@@ -57,20 +57,21 @@ class ActionWindow extends Component {
   }
 
   render() {
+    let aggressive_action, aggressive_text, passive_action, passive_text;
     if (this.props.betSize){
-      var aggressive_action = "raise";
-      var aggressive_text = "Raise " + this.getConstrainedBetSize();
-      var passive_action = "call";
-      var passive_text = "Call " + this.props.betSize;
+      aggressive_action = "raise";
+      aggressive_text = "Raise " + this.getConstrainedBetSize();
+      passive_action = "call";
+      passive_text = "Call " + this.props.betSize;
     } else {
-      var aggressive_action = "bet";
+      aggressive_action = "bet";
       if (this.props.isFacingLimp){
-        var aggressive_text = "Raise " + this.getConstrainedBetSize();
+        aggressive_text = "Raise " + this.getConstrainedBetSize();
       } else {
-        var aggressive_text = "Bet " + this.getConstrainedBetSize();
+        aggressive_text = "Bet " + this.getConstrainedBetSize();
       }
-      var passive_action = "check";
-      var passive_text = "Check";
+      passive_action = "check";
+      passive_text = "Check";
     }
     let aggressive_buttons = '';
     if (this.props.heroStackSize > this.props.betSize){
@@ -85,7 +86,7 @@ class ActionWindow extends Component {
         <input type="text" value={this.state.inputBetSize}
                onChange={this.handleInputChange}
                onKeyDown={this.handleKeyDown(aggressive_action)}/>
-      ]
+      ];
     }
     return (
       <div className="action-window">

@@ -42,8 +42,12 @@ class Seat extends Component {
     }
     return (
       <div className={"seat seat-" + this.props.seatNum + (this.props.isActive ? " active" : "")}>
-        <Card card={this.props.cards[0]} />
-        <Card card={this.props.cards[1]} />
+        {this.props.cards[0] &&
+          <Card card={this.props.cards[0]} />
+        }
+        {this.props.cards[1] &&
+          <Card card={this.props.cards[1]} />
+        }
         {button}
         <div className="invested">
           {this.props.seatInfo.amountInvested || ''}

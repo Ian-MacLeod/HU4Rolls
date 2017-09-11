@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import ActionWindow from './ActionWindow';
 import Board from './Board';
-import Card from './Card';
 import ChatWindow from './ChatWindow';
 import Seat from './Seat';
 import './styles.css';
@@ -40,17 +39,22 @@ class Table extends Component {
 
   componentDidMount() {
     this.props.socket.on('new state', state => {
+      console.log(this);
       this.setState(state);
       console.log(state);
     });
     this.props.socket.on('deal cards', ([cards, seatNum]) => {
-      this.showCardsAtSeat(cards, seatNum);
+      this.dealCards(cards, seatNum);
     });
     this.props.socket.on('seated at', (seatNum) => {
       this.setState({heroNum: seatNum});
     });
     this.props.socket.on('show cards', (cards) => {
       this.setState({'cardsBySeat': cards});
+    })
+    this.props.socket.on('clear cards', () => {
+      let no_cards = new Array(this.props.numSeats).fill([null], [null]);
+      this.setState({'cardsBySeat': no_cards});
     })
     console.log('ready to receive');
     this.props.socket.emit('get state', this.props.tableName);
@@ -69,11 +73,8 @@ class Table extends Component {
     this.props.toLobby();
   }
 
-  showCardsAtSeat(cards, seatNum) {
-    console.log(cards, seatNum);
-    console.log(this.props.numSeats)
-    let cardsBySeat = new Array(this.props.numSeats).fill([null, null]);
-    console.log(cardsBySeat);
+  dealCards(cards, seatNum) {
+    let cardsBySeat = new Array(this.props.numSeats).fill(['unknown', 'unknown']);
     cardsBySeat[seatNum] = cards;
     this.setState({cardsBySeat: cardsBySeat});
   }

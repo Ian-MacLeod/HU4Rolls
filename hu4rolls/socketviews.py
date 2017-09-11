@@ -81,3 +81,4 @@ def player_leave(table_name):
     new_state = table.remove_player(request.sid)
     if new_state is not None:
         emit('new state', new_state, room=table_name)
+        emit('clear cards', room=table_name)
