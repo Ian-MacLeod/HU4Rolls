@@ -183,7 +183,7 @@ class PokerTable(db.Model):
             self.stage = self.stage.next()
 
     def start_new_hand(self):
-        self.stage = GameStage.preflop
+        self.clear()
         self.hand_num += 1
         self.action_num = 0
         if self.button is None:
@@ -191,15 +191,19 @@ class PokerTable(db.Model):
         else:
             self.button = 1 - self.button
         self.active_seat = self.button
-        self.pot_size = 0
-        self.bet_size = 0
-        self.total_bet_size = 0
-        for seat in self.seats:
-            seat.stack_size = self.max_buyin_bbs * self.bb_size
-            seat.amount_invested = 0
         self.put_in(self.button, self.bb_size // 2)
         self.put_in(1 - self.button, self.bb_size)
         self.deal_hands()
+
+    def clear(self):
+        self.pot_size = 0
+        self.bet_size = 0
+        self.total_bet_size = 0
+        self.active_seat = None
+        self.stage = GameStage.preflop
+        for seat in self.seats:
+            seat.stack_size = self.max_buyin_bbs * self.bb_size
+            seat.amount_invested = 0
 
     def advance_active_seat(self):
         self.action_num += 1
@@ -277,17 +281,11 @@ class PokerTable(db.Model):
         did_remove_player = False
         for seat_num, seat in enumerate(self.seats):
             if seat.player_id == player_sid:
-                seat.clear()
                 self.pot_size -= self.bet_size
                 self.award_pot_to(1 - seat_num)
-                self.pot_size = 0
-                self.bet_size = 0
-                self.total_bet_size = 0
-                self.stage = GameStage.preflop
-                for seat in self.seats:
-                    seat.amount_invested = 0
+                seat.clear()
+                self.clear()
                 did_remove_player = True
-        self.active_seat = None
         db.session.commit()
         return self.get_state() if did_remove_player else None
 
