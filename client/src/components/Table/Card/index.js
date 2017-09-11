@@ -4,7 +4,7 @@ class Card extends Component {
   render() {
     let suit = 'unknown';
     let rank = ''
-    if (this.props.card != 'unknown') {
+    if (this.props.card !== 'unknown') {
       suit = this.props.card[1];
       rank = this.props.card[0];
     }

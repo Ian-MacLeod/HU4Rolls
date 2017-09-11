@@ -35,29 +35,42 @@ class Table extends Component {
     this.clearTable = this.clearTable.bind(this);
     this.leaveTable = this.leaveTable.bind(this);
     this.backToLobby = this.backToLobby.bind(this);
+    this.socketListeners = [
+      [
+        "new state",
+        state => this.setState(state)
+      ],
+      [
+        "deal cards",
+        ([cards, seatNum]) => this.dealCards(cards, seatNum)
+      ],
+      [
+        "seated at",
+        seatNum => this.setState({heroNum: seatNum})
+      ],
+      [
+        "show cards",
+        cards => this.setState({'cardsBySeat': cards})
+      ],
+      [
+        "clear cards",
+        () => this.clearCards()
+      ],
+    ]
   }
 
   componentDidMount() {
-    this.props.socket.on('new state', state => {
-      console.log(this);
-      this.setState(state);
-      console.log(state);
-    });
-    this.props.socket.on('deal cards', ([cards, seatNum]) => {
-      this.dealCards(cards, seatNum);
-    });
-    this.props.socket.on('seated at', (seatNum) => {
-      this.setState({heroNum: seatNum});
-    });
-    this.props.socket.on('show cards', (cards) => {
-      this.setState({'cardsBySeat': cards});
-    })
-    this.props.socket.on('clear cards', () => {
-      let no_cards = new Array(this.props.numSeats).fill([null], [null]);
-      this.setState({'cardsBySeat': no_cards});
-    })
+    for (let [event, action] of this.socketListeners) {
+      this.props.socket.on(event, action);
+    }
     console.log('ready to receive');
     this.props.socket.emit('get state', this.props.tableName);
+  }
+
+  componentWillUnmount() {
+    for (let [event, action] of this.socketListeners) {
+      this.props.socket.off(event, action);
+    }
   }
 
   clearTable() {
@@ -77,6 +90,11 @@ class Table extends Component {
     let cardsBySeat = new Array(this.props.numSeats).fill(['unknown', 'unknown']);
     cardsBySeat[seatNum] = cards;
     this.setState({cardsBySeat: cardsBySeat});
+  }
+
+  clearCards() {
+    let no_cards = new Array(this.props.numSeats).fill([null], [null]);
+    this.setState({'cardsBySeat': no_cards});
   }
 
   render() {
