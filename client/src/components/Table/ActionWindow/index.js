@@ -76,14 +76,17 @@ class ActionWindow extends Component {
     let aggressive_buttons = '';
     if (this.props.heroStackSize > this.props.betSize){
       aggressive_buttons = [
-        <ActionButton handleClick={this.submitAction(aggressive_action)}
+        <ActionButton key="bet-button"
+                      handleClick={this.submitAction(aggressive_action)}
                       text={aggressive_text} />,
-        <div className="bet-size-buttons">
+        <div key="bet-size-buttons" className="bet-size-buttons">
           <button onClick={this.setBetToPotRatio(1)}>Pot</button>
           <button onClick={this.setBetToPotRatio(3/4)}>3/4 Pot</button>
           <button onClick={this.setBetToPotRatio(1/2)}>1/2 Pot</button>
         </div>,
-        <input type="text" value={this.state.inputBetSize}
+        <input key="bet-input"
+               type="text"
+               value={this.state.inputBetSize}
                onChange={this.handleInputChange}
                onKeyDown={this.handleKeyDown(aggressive_action)}/>
       ];
