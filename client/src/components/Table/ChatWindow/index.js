@@ -43,8 +43,7 @@ class ChatWindow extends Component {
           <div ref={(el) => { this.lastChat = el }}></div>
         </div>
         <form onSubmit={this.sendMessage}>
-          <input type="text" className="chat-message" value={this.state.messageInput} onChange={this.handleChange} />
-          <input type="submit" value="Send Message" />
+          <input type="text" className="chat-message form-control" value={this.state.messageInput} onChange={this.handleChange} />
         </form>
       </div>
     );

@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Button } from 'react-bootstrap';
 import ActionWindow from './ActionWindow';
 import Board from './Board';
 import ChatWindow from './ChatWindow';
@@ -140,9 +141,9 @@ class Table extends Component {
                         socket={this.props.socket}/>
         }
         <div className="meta-buttons">
-          <button onClick={this.backToLobby}>Back to Lobby</button>
-          <button onClick={this.leaveTable}>Stand Up</button>
-          <button onClick={this.clearTable}>Clear Table</button>
+          <Button onClick={this.backToLobby}>Back to Lobby</Button>
+          <Button onClick={this.leaveTable}>Stand Up</Button>
+          <Button onClick={this.clearTable}>Clear Table</Button>
         </div>
       </div>
     );

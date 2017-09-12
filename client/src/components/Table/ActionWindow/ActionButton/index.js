@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
+import { Button } from 'react-bootstrap';
 
 class ActionButton extends Component {
   render() {
     return (
-      <button onClick={this.props.handleClick}>
+      <Button onClick={this.props.handleClick}>
         {this.props.text}
-      </button>
+      </Button>
     )
   }
 }

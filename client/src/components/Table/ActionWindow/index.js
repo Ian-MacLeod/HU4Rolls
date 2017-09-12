@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Button } from 'react-bootstrap';
 import ActionButton from './ActionButton';
 
 class ActionWindow extends Component {
@@ -80,9 +81,9 @@ class ActionWindow extends Component {
                       handleClick={this.submitAction(aggressive_action)}
                       text={aggressive_text} />,
         <div key="bet-size-buttons" className="bet-size-buttons">
-          <button onClick={this.setBetToPotRatio(1)}>Pot</button>
-          <button onClick={this.setBetToPotRatio(3/4)}>3/4 Pot</button>
-          <button onClick={this.setBetToPotRatio(1/2)}>1/2 Pot</button>
+          <Button onClick={this.setBetToPotRatio(1)}>Pot</Button>
+          <Button onClick={this.setBetToPotRatio(3/4)}>3/4 Pot</Button>
+          <Button onClick={this.setBetToPotRatio(1/2)}>1/2 Pot</Button>
         </div>,
         <input key="bet-input"
                type="text"
