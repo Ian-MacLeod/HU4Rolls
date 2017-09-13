@@ -1,5 +1,5 @@
-from hu4rolls import socketio, db
-from .models import PokerTable, Player
+from .hu4rolls import socketio, db
+from .models import PokerTable, User
 from flask_socketio import emit, join_room
 from flask import request
 
@@ -7,8 +7,8 @@ from flask import request
 @socketio.on('clear table')
 def clear_table(table_name):
     table = PokerTable.query.filter_by(name=table_name).first()
-    table.seats[0].player_id = None
-    table.seats[1].player_id = None
+    table.seats[0].user_id = None
+    table.seats[1].user_id = None
     db.session.commit()
     new_state = table.get_state()
     emit('new state', new_state, room=table_name)
@@ -29,9 +29,9 @@ def send_table_list():
 
 @socketio.on('get state')
 def send_state(table_name):
-    if Player.query.get(request.sid) is None:
-        new_player = Player(request.sid)
-        db.session.add(new_player)
+    if User.query.get(request.sid) is None:
+        new_user = User(request.sid)
+        db.session.add(new_user)
         db.session.commit()
     table = PokerTable.query.filter_by(name=table_name).first()
     new_state = table.get_state()
@@ -44,13 +44,13 @@ def handle_message(chat):
 
 
 @socketio.on('take seat')
-def seat_player(seat):
-    if Player.query.get(request.sid) is None:
-        new_player = Player(request.sid)
-        db.session.add(new_player)
+def seat_user(seat):
+    if User.query.get(request.sid) is None:
+        new_user = User(request.sid)
+        db.session.add(new_user)
         db.session.commit()
     table = PokerTable.query.filter_by(name=seat['table_name']).first()
-    new_state = table.seat_player(request.sid, seat['num'])
+    new_state = table.seat_user(request.sid, seat['num'])
     if new_state is not None:
         emit('seated at', seat['num'])
         emit('new state', new_state, room=seat['table_name'])
@@ -66,19 +66,19 @@ def do_action(action):
 
 
 @socketio.on('disconnect')
-def player_disconnect():
+def user_disconnect():
     tables = PokerTable.query.join(PokerTable.seats, aliased=True)\
-        .filter_by(player_id=request.sid).all()
+        .filter_by(user_id=request.sid).all()
     for table in tables:
-        new_state = table.remove_player(request.sid)
+        new_state = table.remove_user(request.sid)
         if new_state is not None:
             emit('new state', new_state, room=table.name)
 
 
 @socketio.on('leave table')
-def player_leave(table_name):
+def user_leave(table_name):
     table = PokerTable.query.filter_by(name=table_name).first()
-    new_state = table.remove_player(request.sid)
+    new_state = table.remove_user(request.sid)
     if new_state is not None:
         emit('new state', new_state, room=table_name)
         emit('clear cards', room=table_name)

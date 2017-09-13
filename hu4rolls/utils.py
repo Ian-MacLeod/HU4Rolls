@@ -1,5 +1,5 @@
 from .models import PokerTable
-from hu4rolls import app, db, socketio
+from .hu4rolls import app, db, socketio
 import eventlet
 import random
 

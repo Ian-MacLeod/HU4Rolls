@@ -2,3 +2,6 @@ venv
 *.pyc
 .env
 *.egg-info
+
+# SQLite databases
+*.sqlite

@@ -1,4 +1,4 @@
-from hu4rolls import app
+from .hu4rolls import app
 
 
 @app.route('/')
