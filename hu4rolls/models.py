@@ -90,6 +90,9 @@ class PokerTable(db.Model):
         self.max_buyin_bbs = max_buyin_bbs
         self.hand_num = 0
         self.action_num = 0
+        self.pot_size = 0
+        self.bet_size = 0
+        self.community_cards = ''
         for i in range(num_seats):
             seat = Seat(i)
             self.seats.append(seat)
