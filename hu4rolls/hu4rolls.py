@@ -1,11 +1,14 @@
+import os
+
 from flask import Flask
 from flask_socketio import SocketIO
 from flask_sqlalchemy import SQLAlchemy
 import eventlet
 
+from config import config
+
 app = Flask(__name__, static_url_path='')
-app.config.from_pyfile('config.py')
-app.config.from_envvar('HU4ROLLS_SETTINGS', silent=True)
+app.config.from_object(config[os.environ.get('HU4ROLLS_CONFIG', 'development')])
 
 socketio = SocketIO(app)
 db = SQLAlchemy(app)
