@@ -7,8 +7,8 @@ from flask import request
 @socketio.on('clear table')
 def clear_table(table_name):
     table = PokerTable.query.filter_by(name=table_name).first()
-    table.seats[0].user_id = None
-    table.seats[1].user_id = None
+    table.seats[0].user_sid = None
+    table.seats[1].user_sid = None
     db.session.commit()
     new_state = table.get_state()
     emit('new state', new_state, room=table_name)
@@ -68,7 +68,7 @@ def do_action(action):
 @socketio.on('disconnect')
 def user_disconnect():
     tables = PokerTable.query.join(PokerTable.seats, aliased=True)\
-        .filter_by(user_id=request.sid).all()
+        .filter_by(user_sid=request.sid).all()
     for table in tables:
         new_state = table.remove_user(request.sid)
         if new_state is not None:

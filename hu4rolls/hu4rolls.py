@@ -17,7 +17,4 @@ import hu4rolls.utils
 import hu4rolls.views
 import hu4rolls.socketviews
 
-
-@app.before_first_request
-def before_first_request():
-    eventlet.spawn(hu4rolls.utils.update_lobby)
+eventlet.spawn(hu4rolls.utils.update_lobby)
