@@ -20,10 +20,10 @@ class GameStage(enum.Enum):
 
 
 class User(db.Model):
-    id = db.Column(db.String, primary_key=True)
+    sid = db.Column(db.String, primary_key=True)
 
     def __init__(self, sid):
-        self.id = sid
+        self.sid = sid
 
 
 class Seat(db.Model):
@@ -31,7 +31,7 @@ class Seat(db.Model):
                                db.ForeignKey('poker_table.id'),
                                primary_key=True)
     number = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.String, db.ForeignKey('user.id'))
+    user_sid = db.Column(db.String, db.ForeignKey('user.sid'))
     user = db.relationship('User')
     stack_size = db.Column(db.Integer)
     hand = db.Column(db.String)
@@ -44,7 +44,7 @@ class Seat(db.Model):
         self.amount_invested = 0
 
     def clear(self):
-        self.user_id = None
+        self.user_sid = None
         self.net_won = 0
         self.stack_size = None
         self.amount_invested = 0
@@ -105,7 +105,7 @@ class PokerTable(db.Model):
     def get_summary(self):
         return {'name': self.name,
                 'numSeats': len(self.seats),
-                'seatsTaken': len([s for s in self.seats if s.user_id is not None])}
+                'seatsTaken': len([s for s in self.seats if s.user_sid is not None])}
 
     def _is_valid_action(self, seat_num, action):
         if self.active_seat != seat_num:
@@ -131,11 +131,11 @@ class PokerTable(db.Model):
         elif action['name'] == 'fold':
             pass
         else:
-            raise ValueError('Invalid action type')
+            return False
         return True
 
     def do_action(self, user_sid, action):
-        users = [s.user_id for s in self.seats]
+        users = [s.user_sid for s in self.seats]
         if user_sid in users:
             seat_num = users.index(user_sid)
         else:
@@ -173,6 +173,9 @@ class PokerTable(db.Model):
                 db.session.expunge(self)
                 eventlet.spawn(self.do_showdown)
             return state
+        else:
+            return False
+
 
     def advance_stage(self):
         self.active_seat = 1 - self.button
@@ -215,8 +218,8 @@ class PokerTable(db.Model):
 
     def seat_user(self, user_sid, seat_num):
         seat = self.seats[seat_num]
-        if seat.user_id is None and user_sid not in [s.user_id for s in self.seats]:
-            seat.user_id = user_sid
+        if seat.user_sid is None and user_sid not in [s.user_sid for s in self.seats]:
+            seat.user_sid = user_sid
             seat.net_won = 0
             seat.stack_size = self.max_buyin_bbs * self.bb_size
             if self.is_full():
@@ -225,10 +228,10 @@ class PokerTable(db.Model):
             return self.get_state()
 
     def is_full(self):
-        return all(s.user_id for s in self.seats)
+        return all(s.user_sid for s in self.seats)
 
     def is_empty(self):
-        return not any(s.user_id for s in self.seats)
+        return not any(s.user_sid for s in self.seats)
 
     def put_in(self, seat_num, amount):
         self.seats[seat_num].stack_size -= amount
@@ -246,7 +249,7 @@ class PokerTable(db.Model):
             self.seats[i].hand = ' '.join(cards[2 * i + 5: 2 * i + 7])
             socketio.emit('deal cards',
                           [self.seats[i].hand.split(), i],
-                          room=self.seats[i].user_id)
+                          room=self.seats[i].user_sid)
 
     def do_showdown(self):
         with app.app_context():
@@ -283,7 +286,7 @@ class PokerTable(db.Model):
     def remove_user(self, user_sid):
         did_remove_user = False
         for seat_num, seat in enumerate(self.seats):
-            if seat.user_id == user_sid:
+            if seat.user_sid == user_sid:
                 self.pot_size -= self.bet_size
                 self.award_pot_to(1 - seat_num)
                 seat.clear()
@@ -297,7 +300,7 @@ class PokerTable(db.Model):
             'seatList': [{'stackSize': seat.stack_size,
                           'netWon': seat.net_won,
                           'amountInvested': seat.amount_invested,
-                          'isEmpty': not seat.user_id} for seat in self.seats],
+                          'isEmpty': not seat.user_sid} for seat in self.seats],
             'activeSeatNum': self.active_seat,
             'button': self.button,
             'BBSize': self.bb_size,
@@ -323,7 +326,7 @@ def start_timeout(table_id, hand_num, action_num, turn_duration):
                     and action_num == table.action_num
                     and table.active_seat is not None):
                 db.session.add(table)
-                new_state = table.do_action(table.seats[table.active_seat].user_id,
+                new_state = table.do_action(table.seats[table.active_seat].user_sid,
                                             {'name': 'fold'})
                 socketio.emit('new state', new_state, room=table.name)
     return timeout
