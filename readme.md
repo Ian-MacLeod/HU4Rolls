@@ -7,6 +7,7 @@ See it in action here:
 
 ## Installing Locally
 
+* Must have Python >= 3.3 and Node >= 6
 * Clone repo
 * Set up and activate a virtual environment
 * Install requirements
@@ -15,7 +16,7 @@ pip install -r requirements.txt
 cd client
 npm install
 ```
-* Run locally
+* Run server
 ```
 python manage.py runlocal
 ```
