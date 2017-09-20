@@ -176,7 +176,6 @@ class PokerTable(db.Model):
         else:
             return False
 
-
     def advance_stage(self):
         self.active_seat = 1 - self.button
         self.bet_size = 0
