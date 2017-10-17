@@ -36,12 +36,12 @@ class ActionWindow extends Component {
   }
 
   getConstrainedBetSize(){
-    let betSize = parseInt(this.state.inputBetSize) || 0;
+    let betSize = parseInt(this.state.inputBetSize, 10) || 0;
     return this.constrainBetSize(betSize);
   }
 
   constrainBetSize(betSize){
-    betSize = parseInt(betSize);
+    betSize = parseInt(betSize, 10);
     let minBetSize = this.props.totalBetSize + Math.max(this.props.betSize, this.props.BBSize);
     let maxBetSize = this.props.heroStackSize + this.props.totalBetSize - this.props.betSize;
     betSize = Math.max(minBetSize, betSize);
@@ -74,18 +74,23 @@ class ActionWindow extends Component {
       passive_action = "check";
       passive_text = "Check";
     }
-    let aggressive_buttons = '';
+    let aggressive_button = '';
+    let pot_size_buttons = '';
     if (this.props.heroStackSize > this.props.betSize){
-      aggressive_buttons = [
-        <ActionButton key="bet-button"
-                      handleClick={this.submitAction(aggressive_action)}
-                      text={aggressive_text} />,
-        <div key="bet-size-buttons" className="bet-size-buttons">
+      aggressive_button = <ActionButton key="bet-button"
+                                        handleClick={this.submitAction(aggressive_action)}
+                                        text={aggressive_text} />;
+      pot_size_buttons = [
+        <div key="bet-size-buttons"
+             className="bet-size-buttons btn-group"
+             role="group"
+             aria-label="Pot Sizing Buttons">
           <Button onClick={this.setBetToPotRatio(1)}>Pot</Button>
           <Button onClick={this.setBetToPotRatio(3/4)}>3/4 Pot</Button>
           <Button onClick={this.setBetToPotRatio(1/2)}>1/2 Pot</Button>
         </div>,
         <input key="bet-input"
+               className="form-control"
                type="text"
                value={this.state.inputBetSize}
                onChange={this.handleInputChange}
@@ -94,9 +99,12 @@ class ActionWindow extends Component {
     }
     return (
       <div className="action-window">
-        <ActionButton handleClick={this.submitAction("fold")} text="Fold" />
-        <ActionButton handleClick={this.submitAction(passive_action)} text={passive_text} />
-        {aggressive_buttons}
+        <div className="btn-group" role="group" aria-label="Actions">
+          <ActionButton handleClick={this.submitAction("fold")} text="Fold" />
+          <ActionButton handleClick={this.submitAction(passive_action)} text={passive_text} />
+          {aggressive_button}
+        </div>
+        {pot_size_buttons}
       </div>
     );
   }

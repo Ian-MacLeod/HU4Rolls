@@ -30,7 +30,8 @@ class App extends Component {
                      toLobby={this.toLobby} />
     }
     return (
-      <div>
+      <div className="content">
+        <h1>HU4Rolls</h1>
         <Lobby hidden={this.state.openTable !== null}
                joinTable={this.joinTable}
                socket={socket} />

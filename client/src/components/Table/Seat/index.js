@@ -33,6 +33,7 @@ class Seat extends Component {
             Net:
             {' ' + this.props.seatInfo.netWon}
           </div>
+          <Timer isActive={this.props.isActive} />
         </div>
       );
     }
@@ -53,7 +54,6 @@ class Seat extends Component {
           {this.props.seatInfo.amountInvested || ''}
         </div>
         {contents}
-        <Timer isActive={this.props.isActive} />
       </div>
     );
   }

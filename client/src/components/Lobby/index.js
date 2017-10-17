@@ -50,7 +50,8 @@ class Lobby extends Component {
     );
     return (
       <div className={this.props.hidden ? 'hide' : ''}>
-        <table className="tables">
+        <h2>Join a table to play:</h2>
+        <table className="table table-bordered tables">
           <tbody>
             <tr>
               <td>
@@ -63,7 +64,8 @@ class Lobby extends Component {
             {tableItems}
           </tbody>
         </table>
-        <button onClick={this.joinTable}>Join Table</button>
+        <button className="btn btn-default"
+                onClick={this.joinTable}>Join Table</button>
       </div>
     )
   }
