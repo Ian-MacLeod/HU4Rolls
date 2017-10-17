@@ -1,4 +1,4 @@
-from .hu4rolls import socketio, db
+from .hu4rolls import socketio, db, app
 from .models import PokerTable, User
 from flask_socketio import emit, join_room
 from flask import request
@@ -6,12 +6,13 @@ from flask import request
 
 @socketio.on('clear table')
 def clear_table(table_name):
-    table = PokerTable.query.filter_by(name=table_name).first()
-    table.seats[0].user_sid = None
-    table.seats[1].user_sid = None
-    db.session.commit()
-    new_state = table.get_state()
-    emit('new state', new_state, room=table_name)
+    if app.config['DEBUG']:
+        table = PokerTable.query.filter_by(name=table_name).first()
+        table.seats[0].user_sid = None
+        table.seats[1].user_sid = None
+        db.session.commit()
+        new_state = table.get_state()
+        emit('new state', new_state, room=table_name)
 
 
 @socketio.on('join table')

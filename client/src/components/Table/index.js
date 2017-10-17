@@ -33,7 +33,6 @@ class Table extends Component {
       BBSize: 0,
       cardsBySeat: [[null, null], [null, null]]
     }
-    this.clearTable = this.clearTable.bind(this);
     this.leaveTable = this.leaveTable.bind(this);
     this.backToLobby = this.backToLobby.bind(this);
     this.socketListeners = [
@@ -72,10 +71,6 @@ class Table extends Component {
     for (let [event, action] of this.socketListeners) {
       this.props.socket.off(event, action);
     }
-  }
-
-  clearTable() {
-    this.props.socket.emit('clear table', this.props.tableName);
   }
 
   leaveTable(){
@@ -143,7 +138,6 @@ class Table extends Component {
         <div className="meta-buttons">
           <Button onClick={this.backToLobby}>Back to Lobby</Button>
           <Button onClick={this.leaveTable}>Stand Up</Button>
-          <Button onClick={this.clearTable}>Clear Table</Button>
         </div>
       </div>
     );
