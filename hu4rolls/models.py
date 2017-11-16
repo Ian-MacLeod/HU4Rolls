@@ -244,17 +244,19 @@ class PokerTable(db.Model):
         cards_needed = 2 * len(self.seats) + 5
         cards = [str(c) for c in poker.make_random_hand(cards_needed)]
         self.community_cards = ' '.join(cards[:5])
+        socketio.emit('deal cards')
         for i in range(len(self.seats)):
             self.seats[i].hand = ' '.join(cards[2 * i + 5: 2 * i + 7])
-            socketio.emit('deal cards',
-                          [self.seats[i].hand.split(), i],
+            socketio.emit('show cards',
+                          [[self.seats[i].hand.split(), i]],
                           room=self.seats[i].user_sid)
 
     def do_showdown(self):
         with app.app_context():
             db.session.add(self)
             socketio.emit('show cards',
-                          [self.seats[0].hand.split(), self.seats[1].hand.split()],
+                          [[self.seats[0].hand.split(), 0],
+                           [self.seats[1].hand.split(), 1]],
                           room=self.name)
             while self.stage != GameStage.river:
                 eventlet.sleep(1)

@@ -1,147 +1,98 @@
 import React, { Component } from 'react';
 import { Button } from 'react-bootstrap';
+import { connect } from 'react-redux';
+import {
+  takeSeat,
+  leaveTable,
+  standUp
+ } from 'actions';
+import PropTypes from 'prop-types';
 import ActionWindow from './ActionWindow';
 import Board from './Board';
 import ChatWindow from './ChatWindow';
 import Seat from './Seat';
 import './styles.css';
 
-
 class Table extends Component {
-  constructor() {
-    super();
-    this.state = {
-      seatList: [{
-        stackSize: null,
-        netWon: 0,
-        amountInvested: 0,
-        isEmpty: true
-      },
-      {
-        stackSize: null,
-        netWon: 0,
-        amountInvested: 0,
-        isEmpty: true
-      }],
-      activeSeatNum: null,
-      button: 0,
-      heroNum: null,
-      potSize: 0,
-      betSize: 0,
-      totalBetSize: 0,
-      communityCards: [],
-      BBSize: 0,
-      cardsBySeat: [[null, null], [null, null]]
-    }
-    this.leaveTable = this.leaveTable.bind(this);
-    this.backToLobby = this.backToLobby.bind(this);
-    this.socketListeners = [
-      [
-        "new state",
-        state => this.setState(state)
-      ],
-      [
-        "deal cards",
-        ([cards, seatNum]) => this.dealCards(cards, seatNum)
-      ],
-      [
-        "seated at",
-        seatNum => this.setState({heroNum: seatNum})
-      ],
-      [
-        "show cards",
-        cards => this.setState({'cardsBySeat': cards})
-      ],
-      [
-        "clear cards",
-        () => this.clearCards()
-      ],
-    ]
-  }
-
-  componentDidMount() {
-    for (let [event, action] of this.socketListeners) {
-      this.props.socket.on(event, action);
-    }
-    console.log('ready to receive');
-    this.props.socket.emit('get state', this.props.tableName);
-  }
-
-  componentWillUnmount() {
-    for (let [event, action] of this.socketListeners) {
-      this.props.socket.off(event, action);
-    }
-  }
-
-  leaveTable(){
-    this.props.socket.emit('leave table', this.props.tableName);
+  standUp(){
+    this.context.socket.emit('stand up', this.props.name);
+    this.props.standUp();
   }
 
   backToLobby(){
-    this.leaveTable();
-    this.props.toLobby();
-  }
-
-  dealCards(cards, seatNum) {
-    let cardsBySeat = new Array(this.props.numSeats).fill(['unknown', 'unknown']);
-    cardsBySeat[seatNum] = cards;
-    this.setState({cardsBySeat: cardsBySeat});
-  }
-
-  clearCards() {
-    let no_cards = new Array(this.props.numSeats).fill([null], [null]);
-    this.setState({'cardsBySeat': no_cards});
+    if (this.props.heroNum !== null) {
+      this.standUp();
+    }
+    this.props.leaveTable();
   }
 
   render() {
-    let isFacingLimp = (this.state.communityCards.length === 0
-                        && this.state.totalBetSize === this.state.BBSize);
-    let totalInvested = this.state.seatList.reduce(
+    const isFacingLimp = (this.props.communityCards.length === 0
+      && this.props.totalBetSize === this.props.BBSize);
+    const totalInvested = this.props.seatList.reduce(
       (a, b) => a + b.amountInvested, 0);
-    let potSize = this.state.potSize - totalInvested;
-    let investedString = potSize ? 'Pot ' + potSize : '';
+    const potSize = this.props.potSize - totalInvested;
+    const investedString = potSize ? 'Pot ' + potSize : '';
+    const isPlayerTurn = this.props.heroNum !== null && this.props.heroNum === this.props.activeSeatNum
     return(
-      <div className="pokertable">
+      <div className={"pokertable " + (this.props.name === null && "hide")}>
         <div className="felt">
           <div className="pot-size">
             {investedString}
           </div>
-          <Seat seatInfo={this.state.seatList[0]}
+          <Seat seatInfo={this.props.seatList[0]}
                 seatNum={0}
-                cards={this.state.cardsBySeat[0]}
-                isActive={this.state.activeSeatNum === 0}
-                isButton={this.state.button === 0}
-                tableName={this.props.tableName}
-                socket={this.props.socket} />
-          <Seat seatInfo={this.state.seatList[1]}
+                cards={this.props.cardsBySeat[0]}
+                isActive={this.props.activeSeatNum === 0}
+                isButton={this.props.button === 0}
+                tableName={this.props.name} />
+          <Seat seatInfo={this.props.seatList[1]}
                 seatNum={1}
-                cards={this.state.cardsBySeat[1]}
-                isActive={this.state.activeSeatNum === 1}
-                isButton={this.state.button === 1}
-                tableName={this.props.tableName}
-                socket={this.props.socket} />
-          <Board cards={this.state.communityCards} />
+                cards={this.props.cardsBySeat[1]}
+                isActive={this.props.activeSeatNum === 1}
+                isButton={this.props.button === 1}
+                tableName={this.props.name} />
+          <Board cards={this.props.communityCards} />
         </div>
-        <ChatWindow tableName={this.props.tableName}
-                    socket={this.props.socket} />
-        {this.state.heroNum !== null && this.state.heroNum === this.state.activeSeatNum &&
-          <ActionWindow heroStackSize={this.state.seatList[this.state.heroNum].stackSize}
-                        betSize={this.state.betSize}
-                        potSize={this.state.potSize}
-                        totalBetSize={this.state.totalBetSize}
-                        BBSize={this.state.BBSize}
+        <ChatWindow />
+        {isPlayerTurn &&
+          <ActionWindow heroStackSize={this.props.seatList[this.props.heroNum].stackSize}
+                        betSize={this.props.betSize}
+                        potSize={this.props.potSize}
+                        totalBetSize={this.props.totalBetSize}
+                        BBSize={this.props.BBSize}
                         isFacingLimp={isFacingLimp}
-                        amountInvested={this.state.seatList[this.state.heroNum].amountInvested}
-                        tableName={this.props.tableName}
+                        amountInvested={this.props.seatList[this.props.heroNum].amountInvested}
+                        tableName={this.props.name}
                         socket={this.props.socket}/>
         }
         <div className="meta-buttons">
-          <Button onClick={this.backToLobby}>Back to Lobby</Button>
-          <Button onClick={this.leaveTable}>Stand Up</Button>
+          <Button onClick={this.backToLobby.bind(this)}>Back to Lobby</Button>
+          <Button onClick={this.standUp.bind(this)}>Stand Up</Button>
         </div>
       </div>
     );
   }
 }
 
-export default Table;
+Table.contextTypes = {
+  socket: PropTypes.object
+}
+
+const mapStateToProps = (state) => {
+  return state.table;
+}
+
+const mapDispatchToProps = dispatch => {
+  return {
+    takeSeat: (seatNum) => () => dispatch(takeSeat(seatNum)),
+    leaveTable: () => dispatch(leaveTable()),
+    standUp: () => dispatch(standUp())
+  };
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Table);
+

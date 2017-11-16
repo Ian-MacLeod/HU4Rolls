@@ -1,49 +1,19 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
+import { selectTable } from 'actions';
 import './styles.css';
 
-
 class Lobby extends Component {
-  constructor() {
-    super();
-    this.state = {tableList: [],
-                  selectedTable: null};
-    this.selectTable = this.selectTable.bind(this);
-    this.joinTable = this.joinTable.bind(this);
-  }
-
-  componentDidMount() {
-    this.props.socket.on('table list', tableList => {
-      let new_state = {tableList: tableList || []};
-      if(tableList.length && tableList.indexOf(this.state.selectedTable) === -1){
-        new_state.selectedTable = tableList[0].name;
-      }
-      this.setState(new_state);
-    });
-    console.log('getting list');
-    this.props.socket.emit('get table list');
-    setTimeout(function(){
-      console.log('getting list');
-      this.props.socket.emit('get table list');
-    }.bind(this), 1000);
-  }
-
-  selectTable(tableName) {
-    return () => {
-      this.setState({selectedTable: tableName});
-    }
-  }
-
-  joinTable() {
-    if (this.state.selectedTable !== null){
-      this.props.socket.emit('join table', this.state.selectedTable);
-    }
+  onJoinTable() {
+    this.context.socket.emit('join table', this.props.selectedTable);
   }
 
   render() {
-    const tableItems = this.state.tableList.map(tableInfo =>
+    const tableItems = this.props.tableList.map(tableInfo =>
       <tr key={tableInfo.name}
-          className={tableInfo.name === this.state.selectedTable ? 'selected' : ''}
-          onClick={this.selectTable(tableInfo.name)}>
+          className={tableInfo.name === this.props.selectedTable ? 'selected' : ''}
+          onClick={this.props.onSelectTable(tableInfo.name)}>
         <td>{tableInfo.name}</td>
         <td>{tableInfo.seatsTaken}/{tableInfo.numSeats}</td>
       </tr>
@@ -65,10 +35,32 @@ class Lobby extends Component {
           </tbody>
         </table>
         <button className="btn btn-default"
-                onClick={this.joinTable}>Join Table</button>
+                onClick={this.onJoinTable.bind(this)}>Join Table</button>
       </div>
     )
   }
 }
 
-export default Lobby;
+Lobby.contextTypes = {
+  socket: PropTypes.object
+}
+
+const mapStateToProps = (state) => {
+  const { tableList, selectedTable } = state.lobby;
+  return {
+    tableList,
+    selectedTable,
+    hidden: state.table.name !== null
+  };
+}
+
+const mapDispatchToProps = dispatch => {
+  return {
+    onSelectTable: tableName => () => dispatch(selectTable(tableName))
+  };
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Lobby);

@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Button } from 'react-bootstrap';
+import PropTypes from 'prop-types';
 import ActionButton from './ActionButton';
 
 class ActionWindow extends Component {
@@ -13,14 +14,14 @@ class ActionWindow extends Component {
   }
 
   submitAction(action) {
-    return (function() {
+    return () => {
       console.log(this.getConstrainedBetSize(), this.props.totalBetSize, this.props.betSize);
-      this.props.socket.emit('do action',
+      this.context.socket.emit('do action',
                              {table_name: this.props.tableName,
                               'name': action,
                               'size': this.getConstrainedBetSize() - this.props.totalBetSize + this.props.betSize});
       this.setState({inputBetSize: 0});
-    }).bind(this);
+    };
   }
 
   handleInputChange(event) {
@@ -28,33 +29,33 @@ class ActionWindow extends Component {
   }
 
   handleKeyDown(action) {
-    return (function(event) {
+    return (event) => {
       if (event.key === 'Enter'){
         this.submitAction(action)();
       }
-    }).bind(this);
+    };
   }
 
   getConstrainedBetSize(){
-    let betSize = parseInt(this.state.inputBetSize, 10) || 0;
+    const betSize = parseInt(this.state.inputBetSize, 10) || 0;
     return this.constrainBetSize(betSize);
   }
 
   constrainBetSize(betSize){
     betSize = parseInt(betSize, 10);
-    let minBetSize = this.props.totalBetSize + Math.max(this.props.betSize, this.props.BBSize);
-    let maxBetSize = this.props.heroStackSize + this.props.totalBetSize - this.props.betSize;
+    const minBetSize = this.props.totalBetSize + Math.max(this.props.betSize, this.props.BBSize);
+    const maxBetSize = this.props.heroStackSize + this.props.totalBetSize - this.props.betSize;
     betSize = Math.max(minBetSize, betSize);
     betSize = Math.min(maxBetSize, betSize);
     return betSize;
   }
 
   setBetToPotRatio(ratio){
-    return function(){
-      let potSizeBet = (this.props.amountInvested + this.props.betSize
+    return () => {
+      const potSizeBet = (this.props.amountInvested + this.props.betSize
                         + ratio * (this.props.potSize + this.props.betSize));
       this.setState({inputBetSize: this.constrainBetSize(potSizeBet)});
-    }.bind(this)
+    };
   }
 
   render() {
@@ -108,6 +109,10 @@ class ActionWindow extends Component {
       </div>
     );
   }
+}
+
+ActionWindow.contextTypes = {
+  socket: PropTypes.object
 }
 
 export default ActionWindow;

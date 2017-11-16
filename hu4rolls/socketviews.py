@@ -1,6 +1,6 @@
 from .hu4rolls import socketio, db, app
 from .models import PokerTable, User
-from flask_socketio import emit, join_room
+from flask_socketio import emit, join_room, leave_room
 from flask import request
 
 
@@ -17,11 +17,24 @@ def clear_table(table_name):
 
 @socketio.on('join table')
 def join_table(table_name):
-    if table_name and PokerTable.query.filter_by(name=table_name).first():
+    table = PokerTable.query.filter_by(name=table_name).first()
+    if table:
         join_room(table_name)
-        emit('join table', table_name)
+        table_info = {
+            'name': table_name,
+            'state': table.get_state()
+        }
+        emit('join table', table_info)
 
 
+@socketio.on('leave table')
+def leave_table(table_name):
+    table = PokerTable.query.filter_by(name=table_name).first()
+    if table:
+        leave_room(table_name)
+
+
+@socketio.on('connect')
 @socketio.on('get table list')
 def send_table_list():
     table_list = PokerTable.get_lobby_table_list()
@@ -76,7 +89,7 @@ def user_disconnect():
             emit('new state', new_state, room=table.name)
 
 
-@socketio.on('leave table')
+@socketio.on('stand up')
 def user_leave(table_name):
     table = PokerTable.query.filter_by(name=table_name).first()
     new_state = table.remove_user(request.sid)

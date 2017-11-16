@@ -1,16 +1,17 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import Card from '../Card';
 import Timer from './Timer';
 
 class Seat extends Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.handleSit = this.handleSit.bind(this);
   }
 
   handleSit() {
-    console.log(this.props.tableName)
-    this.props.socket.emit('take seat', {table_name: this.props.tableName,
+    console.log(this.props.tableName);
+    this.context.socket.emit('take seat', {table_name: this.props.tableName,
                                          num: this.props.seatNum});
     console.log('sitting at seat ' + this.props.seatNum);
   }
@@ -57,6 +58,10 @@ class Seat extends Component {
       </div>
     );
   }
+}
+
+Seat.contextTypes = {
+  socket: PropTypes.object
 }
 
 export default Seat;
