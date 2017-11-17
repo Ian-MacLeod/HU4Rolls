@@ -2,7 +2,7 @@
 
 A Heads Up No Limit Hold'Em App.
 See it in action here:
-[Hu4Rolls](https://hidden-cove-72814.herokuapp.com/)
+[Hu4Rolls](https://hu4rolls.herokuapp.com/)
 
 
 ## Installing Locally
