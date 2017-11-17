@@ -14,7 +14,6 @@ class ChatWindow extends Component {
 
   sendChat(event) {
     event.preventDefault();
-    console.log(this.props);
     this.context.socket.emit('send chat', {table_name: this.props.tableName,
                                            message: this.input.value});
     this.input.value = '';

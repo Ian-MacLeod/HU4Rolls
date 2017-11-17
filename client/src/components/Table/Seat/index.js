@@ -10,14 +10,11 @@ class Seat extends Component {
   }
 
   handleSit() {
-    console.log(this.props.tableName);
     this.context.socket.emit('take seat', {table_name: this.props.tableName,
                                          num: this.props.seatNum});
-    console.log('sitting at seat ' + this.props.seatNum);
   }
 
   render() {
-    console.log('cards: ' + this.props.cards);
     let contents;
     if (this.props.seatInfo.isEmpty){
       contents = (

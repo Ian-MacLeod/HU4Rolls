@@ -15,7 +15,6 @@ class ActionWindow extends Component {
 
   submitAction(action) {
     return () => {
-      console.log(this.getConstrainedBetSize(), this.props.totalBetSize, this.props.betSize);
       this.context.socket.emit('do action',
                              {table_name: this.props.tableName,
                               'name': action,
