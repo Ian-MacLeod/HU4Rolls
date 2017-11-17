@@ -4,5 +4,5 @@ import table from './table';
 
 export default combineReducers({
   lobby,
-  table
+  table,
 });

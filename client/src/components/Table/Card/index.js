@@ -1,19 +1,21 @@
-import React, { Component } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 
-class Card extends Component {
-  render() {
-    let suit = 'unknown';
-    let rank = ''
-    if (this.props.card !== 'unknown') {
-      suit = this.props.card[1];
-      rank = this.props.card[0];
-    }
-    return (
-      <div className={"card suit-" + suit}>
-        <div>{rank}</div>
-      </div>
-    );
+const Card = ({ card }) => {
+  let suit = 'unknown';
+  let rank = '';
+  if (card !== 'unknown') {
+    [suit, rank] = card;
   }
-}
+  return (
+    <div className={`card suit-${suit}`}>
+      <div>{rank}</div>
+    </div>
+  );
+};
+
+Card.propTypes = {
+  card: PropTypes.string.isRequired,
+};
 
 export default Card;

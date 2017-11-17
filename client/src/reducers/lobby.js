@@ -1,18 +1,18 @@
 import {
   SELECT_TABLE,
-  UPDATE_TABLE_LIST
-} from 'actions';
+  UPDATE_TABLE_LIST,
+} from '../actions';
 
 const initialState = {
   tableList: [],
-  selectedTable: null
-}
+  selectedTable: null,
+};
 
-const lobby = (state=initialState, action) => {
+const lobby = (state = initialState, action) => {
   switch (action.type) {
     case SELECT_TABLE:
-      return {...state, selectedTable: action.name};
-    case UPDATE_TABLE_LIST:
+      return { ...state, selectedTable: action.name };
+    case UPDATE_TABLE_LIST: {
       const newState = {};
       newState.tableList = action.tableList;
       if (newState.tableList.filter(table => table.name === state.selectedTable).length === 0) {
@@ -20,7 +20,8 @@ const lobby = (state=initialState, action) => {
           newState.tableList[0].name :
           null;
       }
-      return {...state, ...newState};
+      return { ...state, ...newState };
+    }
     default:
       return state;
   }

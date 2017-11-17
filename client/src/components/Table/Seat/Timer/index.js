@@ -1,18 +1,19 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 
 class Timer extends Component {
-  constructor(){
+  constructor() {
     super();
-    this.state = {timeRemaining: 0};
+    this.state = { timeRemaining: 0 };
   }
 
-  componentWillReceiveProps(nextProps) { //Fragile, when does this get called?
+  componentWillReceiveProps(nextProps) { // Fragile, when does this get called?
     clearInterval(this.timerId);
     if (nextProps.isActive) {
-      this.setState({timeRemaining: 30}); // Change later
+      this.setState({ timeRemaining: 30 }); // Change later
       this.timerId = setInterval(
         () => this.tick(),
-        1000
+        1000,
       );
     }
   }
@@ -22,7 +23,7 @@ class Timer extends Component {
   }
 
   tick() {
-    this.setState({timeRemaining: this.state.timeRemaining - 1});
+    this.setState({ timeRemaining: this.state.timeRemaining - 1 });
   }
 
   render() {
@@ -32,4 +33,8 @@ class Timer extends Component {
   }
 }
 
-export default Timer
+Timer.propTypes = {
+  isActive: PropTypes.bool.isRequired,
+};
+
+export default Timer;

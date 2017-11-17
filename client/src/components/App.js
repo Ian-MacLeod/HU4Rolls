@@ -1,6 +1,6 @@
 import React from 'react';
-import Table from './Table'
-import Lobby from './Lobby'
+import Table from './Table';
+import Lobby from './Lobby';
 
 const App = () => (
   <div className="content">

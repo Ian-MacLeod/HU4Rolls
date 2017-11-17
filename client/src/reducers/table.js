@@ -7,8 +7,8 @@ import {
   DEAL_CARDS,
   SHOW_CARDS,
   CLEAR_CARDS,
-  ADD_CHAT_MESSAGE
-} from 'actions';
+  ADD_CHAT_MESSAGE,
+} from '../actions';
 
 const initialState = {
   name: null,
@@ -16,13 +16,13 @@ const initialState = {
     stackSize: null,
     netWon: 0,
     amountInvested: 0,
-    isEmpty: true
+    isEmpty: true,
   },
   {
     stackSize: null,
     netWon: 0,
     amountInvested: 0,
-    isEmpty: true
+    isEmpty: true,
   }],
   activeSeatNum: null,
   button: null,
@@ -37,40 +37,39 @@ const initialState = {
   chatMessages: [],
 };
 
-const table = (state=initialState, action) => {
+const table = (state = initialState, action) => {
   switch (action.type) {
     case JOIN_TABLE:
-      return Object.assign({}, state, {name: action.name});
+      return Object.assign({}, state, { name: action.name });
     case LEAVE_TABLE:
       return Object.assign({}, initialState);
     case UPDATE_GAME_STATE:
       return Object.assign({}, state, action.newState);
     case TAKE_SEAT:
-      return Object.assign({}, state, {heroNum: action.seatNum});
+      return Object.assign({}, state, { heroNum: action.seatNum });
     case STAND_UP:
-      return Object.assign({}, state, {heroNum: null});
-    case DEAL_CARDS:
-      var newCardsBySeat = [];
+      return Object.assign({}, state, { heroNum: null });
+    case DEAL_CARDS: {
+      const newCardsBySeat = [];
       for (let i = 0; i < state.numSeats; i++) {
         newCardsBySeat.push(['unknown', 'unknown']);
       }
-      return Object.assign({}, state, {cardsBySeat: newCardsBySeat});
-    case SHOW_CARDS:
-      var newCardsBySeat = Object.assign({}, state.cardsBySeat);
-      for (let [hand, seatNum] of action.handList) {
-        console.log(hand, seatNum);
-        newCardsBySeat[seatNum] = hand;
-      }
-      return Object.assign({}, state, {cardsBySeat: newCardsBySeat});
+      return Object.assign({}, state, { cardsBySeat: newCardsBySeat });
+    }
+    case SHOW_CARDS: {
+      const newCardsBySeat = Object.assign({}, state.cardsBySeat);
+      action.handList.forEach((hand, seatNum) => { newCardsBySeat[seatNum] = hand; });
+      return Object.assign({}, state, { cardsBySeat: newCardsBySeat });
+    }
     case CLEAR_CARDS:
-      const cardsBySeat = initialState.cardsBySeat;
-      return Object.assign({}, state, {cardsBySeat: cardsBySeat})
-    case ADD_CHAT_MESSAGE:
+      return Object.assign({}, state, { cardsBySeat: initialState.cardsBySeat });
+    case ADD_CHAT_MESSAGE: {
       const chatMessages = [...state.chatMessages, action.message];
-      return Object.assign({}, state, {chatMessages});
+      return Object.assign({}, state, { chatMessages });
+    }
     default:
       return state;
   }
-}
+};
 
 export default table;

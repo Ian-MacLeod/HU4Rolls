@@ -1,20 +1,19 @@
-import React, { Component } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 import Card from '../Card';
 
-class Board extends Component {
-  render() {
-    const cards = this.props.cards
-    const listItems = cards.map((card, index) =>
+const Board = ({ cards }) => (
+  <ul className="board">
+    {cards.map((card, index) => (
       <li key={index}>
         <Card card={card} />
       </li>
-    );
-    return (
-      <ul className="board">
-        {listItems}
-      </ul>
-    );
-  }
-}
+    ))}
+  </ul>
+);
+
+Board.propTypes = {
+  cards: PropTypes.arrayOf(PropTypes.string).isRequired,
+};
 
 export default Board;

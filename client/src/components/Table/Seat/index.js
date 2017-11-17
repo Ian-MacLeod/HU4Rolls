@@ -10,13 +10,15 @@ class Seat extends Component {
   }
 
   handleSit() {
-    this.context.socket.emit('take seat', {table_name: this.props.tableName,
-                                         num: this.props.seatNum});
+    this.context.socket.emit('take seat', {
+      table_name: this.props.tableName,
+      num: this.props.seatNum,
+    });
   }
 
   render() {
     let contents;
-    if (this.props.seatInfo.isEmpty){
+    if (this.props.seatInfo.isEmpty) {
       contents = (
         <button onClick={this.handleSit}>Sit Here</button>
       );
@@ -24,23 +26,21 @@ class Seat extends Component {
       contents = (
         <div>
           <div className="stack">
-            Stack:
-            {' ' + this.props.seatInfo.stackSize}
+            {`Stack: ${this.props.seatInfo.stackSize}`}
           </div>
           <div className="net">
-            Net:
-            {' ' + this.props.seatInfo.netWon}
+            {`Net: ${this.props.seatInfo.netWon}`}
           </div>
           <Timer isActive={this.props.isActive} />
         </div>
       );
     }
     let button = '';
-    if (this.props.isButton){
+    if (this.props.isButton) {
       button = <div className="dealer-button">D</div>;
     }
     return (
-      <div className={"seat seat-" + this.props.seatNum + (this.props.isActive ? " active" : "")}>
+      <div className={`seat seat-${this.props.seatNum} ${this.props.isActive && ' active'}`}>
         {this.props.cards[0] &&
           <Card card={this.props.cards[0]} />
         }
@@ -57,8 +57,22 @@ class Seat extends Component {
   }
 }
 
+Seat.propTypes = {
+  seatInfo: PropTypes.shape({
+    isEmpty: PropTypes.bool,
+    stackSize: PropTypes.number,
+    netWon: PropTypes.number,
+    amountInvested: PropTypes.number,
+  }).isRequired,
+  seatNum: PropTypes.number.isRequired,
+  cards: PropTypes.arrayOf(PropTypes.string).isRequired,
+  isActive: PropTypes.bool.isRequired,
+  isButton: PropTypes.bool.isRequired,
+  tableName: PropTypes.string.isRequired,
+};
+
 Seat.contextTypes = {
-  socket: PropTypes.object
-}
+  socket: PropTypes.object,
+};
 
 export default Seat;

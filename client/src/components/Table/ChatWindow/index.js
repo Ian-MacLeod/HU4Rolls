@@ -14,39 +14,50 @@ class ChatWindow extends Component {
 
   sendChat(event) {
     event.preventDefault();
-    this.context.socket.emit('send chat', {table_name: this.props.tableName,
-                                           message: this.input.value});
+    this.context.socket.emit(
+      'send chat',
+      {
+        table_name: this.props.tableName,
+        message: this.input.value,
+      },
+    );
     this.input.value = '';
   }
 
   render() {
-    return(
+    return (
       <div className="chat">
         <div id="chat-window">
-          {this.props.chatMessages.map((msg, idx) =>
+          {this.props.chatMessages.map((msg, idx) => (
             <div key={idx}>{msg}</div>
-          )}
-          <div ref={(el) => { this.lastChat = el }}></div>
+          ))}
         </div>
         <form onSubmit={this.sendChat}>
-          <input type="text"
-                 className="chat-message form-control"
-                 ref={(input) => this.input = input} />
+          <input
+            type="text"
+            className="chat-message form-control"
+            ref={(input) => { this.input = input; }}
+          />
         </form>
       </div>
     );
   }
 }
 
-ChatWindow.contextTypes = {
-  socket: PropTypes.object
-}
+ChatWindow.propTypes = {
+  tableName: PropTypes.string.isRequired,
+  chatMessages: PropTypes.arrayOf(PropTypes.string).isRequired,
+};
 
-const mapStateToProps = (state) => {
-  return {
+ChatWindow.contextTypes = {
+  socket: PropTypes.object,
+};
+
+const mapStateToProps = state => (
+  {
     chatMessages: state.table.chatMessages,
-    tableName: state.table.name
-  };
-}
+    tableName: state.table.name,
+  }
+);
 
 export default connect(mapStateToProps)(ChatWindow);

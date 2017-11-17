@@ -2,7 +2,7 @@
  * Action types
  */
 
- // Lobby
+// Lobby
 export const JOIN_TABLE = 'JOIN_TABLE';
 export const LEAVE_TABLE = 'LEAVE_TABLE';
 export const SELECT_TABLE = 'SELECT_TABLE';
@@ -24,46 +24,46 @@ export const ADD_CHAT_MESSAGE = 'ADD_CHAT_MESSAGE';
  * Action creators
  */
 
-export const joinTable = (name) => {
-  return {type: JOIN_TABLE, name};
-};
+export const joinTable = name => (
+  { type: JOIN_TABLE, name }
+);
 
-export const leaveTable = () => {
-  return {type: LEAVE_TABLE};
-};
+export const leaveTable = () => (
+  { type: LEAVE_TABLE }
+);
 
-export const selectTable = (name) => {
-  return {type: SELECT_TABLE, name};
-}
+export const selectTable = name => (
+  { type: SELECT_TABLE, name }
+);
 
-export const updateTableList = (tableList) => {
-  return {type: UPDATE_TABLE_LIST, tableList};
-};
+export const updateTableList = tableList => (
+  { type: UPDATE_TABLE_LIST, tableList }
+);
 
-export const takeSeat = (seatNum) => {
-  return {type: TAKE_SEAT, seatNum};
-}
+export const takeSeat = seatNum => (
+  { type: TAKE_SEAT, seatNum }
+);
 
-export const standUp = () => {
-  return {type: STAND_UP};
-};
+export const standUp = () => (
+  { type: STAND_UP }
+);
 
-export const dealCards = () => {
-  return {type: DEAL_CARDS};
-}
+export const dealCards = () => (
+  { type: DEAL_CARDS }
+);
 
-export const showCards = (handList) => {
-  return {type: SHOW_CARDS, handList};
-}
+export const showCards = handList => (
+  { type: SHOW_CARDS, handList }
+);
 
-export const clearCards = () => {
-  return {type: CLEAR_CARDS}
-}
+export const clearCards = () => (
+  { type: CLEAR_CARDS }
+);
 
-export const updateGameState = (newState) => {
-  return {type: UPDATE_GAME_STATE, newState};
-}
+export const updateGameState = newState => (
+  { type: UPDATE_GAME_STATE, newState }
+);
 
-export const addChatMessage = (message) => {
-  return {type: ADD_CHAT_MESSAGE, message};
-}
+export const addChatMessage = message => (
+  { type: ADD_CHAT_MESSAGE, message }
+);
