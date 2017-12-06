@@ -57,7 +57,11 @@ Lobby.propTypes = {
   history: PropTypes.shape({
     push: PropTypes.func,
   }).isRequired,
-  tableList: PropTypes.arrayOf(PropTypes.string).isRequired,
+  tableList: PropTypes.arrayOf(PropTypes.shape({
+    name: PropTypes.string,
+    numSeats: PropTypes.number,
+    seatsTaken: PropTypes.number,
+  })).isRequired,
   selectedTable: PropTypes.string.isRequired,
   onSelectTable: PropTypes.func.isRequired,
 };

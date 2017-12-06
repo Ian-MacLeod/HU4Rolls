@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
 class ChatWindow extends Component {
@@ -17,7 +18,7 @@ class ChatWindow extends Component {
     this.context.socket.emit(
       'send chat',
       {
-        table_name: this.props.tableName,
+        table_name: this.props.match.params.tableName,
         message: this.input.value,
       },
     );
@@ -45,7 +46,11 @@ class ChatWindow extends Component {
 }
 
 ChatWindow.propTypes = {
-  tableName: PropTypes.string.isRequired,
+  match: PropTypes.shape({
+    params: PropTypes.shape({
+      tableName: PropTypes.string,
+    }),
+  }).isRequired,
   chatMessages: PropTypes.arrayOf(PropTypes.string).isRequired,
 };
 
@@ -56,8 +61,7 @@ ChatWindow.contextTypes = {
 const mapStateToProps = state => (
   {
     chatMessages: state.table.chatMessages,
-    tableName: state.table.name,
   }
 );
 
-export default connect(mapStateToProps)(ChatWindow);
+export default withRouter(connect(mapStateToProps)(ChatWindow));
