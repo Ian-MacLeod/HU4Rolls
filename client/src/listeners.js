@@ -1,6 +1,5 @@
 import {
   updateTableList,
-  joinTable,
   updateGameState,
   addChatMessage,
   takeSeat,
@@ -12,10 +11,6 @@ import {
 const attachListeners = (socket, store) => {
   socket.on('table list', (tableList) => {
     store.dispatch(updateTableList(tableList));
-  });
-  socket.on('join table', (tableInfo) => {
-    store.dispatch(joinTable(tableInfo.name));
-    store.dispatch(updateGameState(tableInfo.state));
   });
   socket.on('new state', (state) => {
     store.dispatch(updateGameState(state));

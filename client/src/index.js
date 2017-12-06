@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 import { createStore } from 'redux';
+import { BrowserRouter as Router, Route } from 'react-router-dom';
 import socketio from 'socket.io-client';
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap/dist/css/bootstrap-theme.css';
@@ -23,7 +24,9 @@ ReactDOM.render(
   (
     <Provider store={store}>
       <SocketProvider socket={socket}>
-        <App />
+        <Router>
+          <Route path="/" component={App} />
+        </Router>
       </SocketProvider>
     </Provider>
   ),

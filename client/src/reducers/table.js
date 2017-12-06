@@ -1,5 +1,4 @@
 import {
-  JOIN_TABLE,
   LEAVE_TABLE,
   UPDATE_GAME_STATE,
   TAKE_SEAT,
@@ -11,7 +10,7 @@ import {
 } from '../actions';
 
 const initialState = {
-  name: null,
+  isLoading: true,
   seatList: [{
     stackSize: null,
     netWon: 0,
@@ -39,12 +38,10 @@ const initialState = {
 
 const table = (state = initialState, action) => {
   switch (action.type) {
-    case JOIN_TABLE:
-      return Object.assign({}, state, { name: action.name });
     case LEAVE_TABLE:
       return Object.assign({}, initialState);
     case UPDATE_GAME_STATE:
-      return Object.assign({}, state, action.newState);
+      return Object.assign({}, state, action.newState, { isLoading: false });
     case TAKE_SEAT:
       return Object.assign({}, state, { heroNum: action.seatNum });
     case STAND_UP:

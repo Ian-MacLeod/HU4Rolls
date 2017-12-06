@@ -3,8 +3,6 @@
  */
 
 // Lobby
-export const JOIN_TABLE = 'JOIN_TABLE';
-export const LEAVE_TABLE = 'LEAVE_TABLE';
 export const SELECT_TABLE = 'SELECT_TABLE';
 export const UPDATE_TABLE_LIST = 'UPDATE_TABLE_LIST';
 
@@ -23,14 +21,6 @@ export const ADD_CHAT_MESSAGE = 'ADD_CHAT_MESSAGE';
 /*
  * Action creators
  */
-
-export const joinTable = name => (
-  { type: JOIN_TABLE, name }
-);
-
-export const leaveTable = () => (
-  { type: LEAVE_TABLE }
-);
 
 export const selectTable = name => (
   { type: SELECT_TABLE, name }

@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { selectTable } from '../../actions';
 import './styles.css';
@@ -11,7 +12,7 @@ class Lobby extends Component {
   }
 
   onJoinTable() {
-    this.context.socket.emit('join table', this.props.selectedTable);
+    this.props.history.push(`/table/${this.props.selectedTable}`);
   }
 
   render() {
@@ -26,7 +27,7 @@ class Lobby extends Component {
       </tr>
     ));
     return (
-      <div className={this.props.hidden ? 'hide' : ''}>
+      <div>
         <h2>Join a table to play:</h2>
         <table className="table table-bordered tables">
           <tbody>
@@ -53,9 +54,11 @@ class Lobby extends Component {
 }
 
 Lobby.propTypes = {
+  history: PropTypes.shape({
+    push: PropTypes.func,
+  }).isRequired,
   tableList: PropTypes.arrayOf(PropTypes.string).isRequired,
   selectedTable: PropTypes.string.isRequired,
-  hidden: PropTypes.bool.isRequired,
   onSelectTable: PropTypes.func.isRequired,
 };
 
@@ -68,7 +71,6 @@ const mapStateToProps = (state) => {
   return {
     tableList,
     selectedTable,
-    hidden: state.table.name !== null,
   };
 };
 
@@ -76,7 +78,7 @@ const mapDispatchToProps = dispatch => (
   { onSelectTable: tableName => () => dispatch(selectTable(tableName)) }
 );
 
-export default connect(
+export default withRouter(connect(
   mapStateToProps,
   mapDispatchToProps,
-)(Lobby);
+)(Lobby));
