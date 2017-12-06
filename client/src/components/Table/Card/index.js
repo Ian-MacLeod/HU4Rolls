@@ -5,7 +5,7 @@ const Card = ({ card }) => {
   let suit = 'unknown';
   let rank = '';
   if (card !== 'unknown') {
-    [suit, rank] = card;
+    [rank, suit] = card;
   }
   return (
     <div className={`card suit-${suit}`}>

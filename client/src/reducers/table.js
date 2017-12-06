@@ -55,7 +55,7 @@ const table = (state = initialState, action) => {
     }
     case SHOW_CARDS: {
       const newCardsBySeat = Object.assign({}, state.cardsBySeat);
-      action.handList.forEach((hand, seatNum) => { newCardsBySeat[seatNum] = hand; });
+      action.handList.forEach(([hand, seatNum]) => { newCardsBySeat[seatNum] = hand; });
       return Object.assign({}, state, { cardsBySeat: newCardsBySeat });
     }
     case CLEAR_CARDS:
