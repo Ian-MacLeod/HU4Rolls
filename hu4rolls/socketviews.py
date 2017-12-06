@@ -20,11 +20,7 @@ def join_table(table_name):
     table = PokerTable.query.filter_by(name=table_name).first()
     if table:
         join_room(table_name)
-        table_info = {
-            'name': table_name,
-            'state': table.get_state()
-        }
-        emit('join table', table_info)
+        emit('new state', table.get_state())
 
 
 @socketio.on('leave table')
@@ -39,17 +35,6 @@ def leave_table(table_name):
 def send_table_list():
     table_list = PokerTable.get_lobby_table_list()
     emit('table list', table_list)
-
-
-@socketio.on('get state')
-def send_state(table_name):
-    if User.query.get(request.sid) is None:
-        new_user = User(request.sid)
-        db.session.add(new_user)
-        db.session.commit()
-    table = PokerTable.query.filter_by(name=table_name).first()
-    new_state = table.get_state()
-    emit('new state', new_state)
 
 
 @socketio.on('send chat')
