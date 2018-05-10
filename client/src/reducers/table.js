@@ -1,5 +1,4 @@
 import {
-  LEAVE_TABLE,
   UPDATE_GAME_STATE,
   TAKE_SEAT,
   STAND_UP,
@@ -38,8 +37,6 @@ const initialState = {
 
 const table = (state = initialState, action) => {
   switch (action.type) {
-    case LEAVE_TABLE:
-      return Object.assign({}, initialState);
     case UPDATE_GAME_STATE:
       return Object.assign({}, state, action.newState, { isLoading: false });
     case TAKE_SEAT:
