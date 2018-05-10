@@ -24,3 +24,5 @@ __pycache__
 # Virtual environment
 .python-version
 venv
+
+.vscode
