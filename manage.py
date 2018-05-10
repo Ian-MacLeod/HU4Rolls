@@ -28,9 +28,9 @@ def test():
 
 @manager.command
 def runlocal():
-    with subprocess.Popen(['npm', 'start', '--prefix', 'client'], shell=True):
-        os.environ['HU4ROLLS_CONFIG'] = 'development'
-        socketio.run(app, host='localhost', port=5000)
+    subprocess.Popen('npm start --prefix client', shell=True)
+    os.environ['HU4ROLLS_CONFIG'] = 'development'
+    socketio.run(app, host='localhost', port=5000, use_reloader=False)
 
 
 if __name__ == '__main__':
